@@ -58,4 +58,17 @@
 3. - [ ] Tag cloud
 
 
+- [ ] Optional features:
+1. - [ ] Document previews
+2. - [ ] Arbitrary number of fields 
+3. - [ ] Form auth with email confirmation
+4. - [ ] Field validators
+5. - [ ] Drop-down field type
+
+
+- [ ] Do not use
+1. - [ ] N buttons
+2. - [ ] No image upload to Web Server or DB -> USE CLOUDS
+3. - [ ] No N+1 queries per view
+4. - [ ] No full database scans for search
 
