@@ -20,7 +20,7 @@
 
 - [ ] Roles
 1. - [ ] Non-authenticated users
-2. - [ ] Authenticated users
+2. - [ ] Authenticated via social networks 2+
 3. - [ ] Write access
 4. - [ ] Creators
 5. - [ ] Admins
