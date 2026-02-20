@@ -1,39 +1,77 @@
-using InventoryManagementApp.Components;
-using Microsoft.EntityFrameworkCore;          
-using Microsoft.AspNetCore.Identity;         
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using InventoryManagementApp.Data;
+using InventoryManagementApp.Middleware;
+using InventoryManagementApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// KESTREL (Render)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    options.ListenAnyIP(int.Parse(port));
+});
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+// DATABASE
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string connectionString;
 
-builder.Services.AddDefaultIdentity<ApplicationUser>()
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+if (!string.IsNullOrWhiteSpace(databaseUrl))
+{
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':', 2);
 
+    var dbPort = uri.Port > 0 ? uri.Port : 5432; // 🔥 FIX
+
+    connectionString =
+        $"Host={uri.Host};" +
+        $"Port={dbPort};" +
+        $"Database={uri.AbsolutePath.TrimStart('/')};" +
+        $"Username={userInfo[0]};" +
+        $"Password={userInfo[1]};" +
+        $"SSL Mode=Require;Trust Server Certificate=true";
+}
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new Exception("No database connection string configured.");
+}
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// AUTH
+builder.Services
+    .AddAuthentication(
+        Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/Login";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-
 
 var app = builder.Build();
 
-
-if (!app.Environment.IsDevelopment())
+// AUTO MIGRATIONS
+using (var scope = app.Services.CreateScope())
 {
-    app.UseExceptionHandler("/Error");
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
 }
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
-
 app.UseAuthentication();
+app.UseMiddleware<UserStatusMiddleware>();
 app.UseAuthorization();
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
-
+app.MapRazorPages();
 app.Run();

@@ -12,6 +12,4 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http://+:$PORT
-
-ENTRYPOINT ["dotnet", "InventoryManagementApp.dll"]
+ENTRYPOINT dotnet InventoryManagementApp.dll --urls "http://+:${PORT:-8080}"
