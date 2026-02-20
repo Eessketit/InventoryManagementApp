@@ -21,7 +21,7 @@ if (!string.IsNullOrWhiteSpace(databaseUrl))
     var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':', 2);
 
-    var dbPort = uri.Port > 0 ? uri.Port : 5432; // 🔥 FIX
+    var dbPort = uri.Port > 0 ? uri.Port : 5432; 
 
     connectionString =
         $"Host={uri.Host};" +
@@ -36,6 +36,10 @@ else
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
         ?? throw new Exception("No database connection string configured.");
 }
+
+Console.WriteLine(!string.IsNullOrWhiteSpace(databaseUrl)
+    ? $"[Startup] Using DATABASE_URL (Host: {new Uri(databaseUrl).Host})"
+    : "[Startup] DATABASE_URL not found — using appsettings connection string");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
