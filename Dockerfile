@@ -12,4 +12,4 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-ENTRYPOINT dotnet InventoryManagementApp.dll --urls "http://+:${PORT:-8080}"
+ENTRYPOINT dotnet InventoryApp.dll --urls "http://+:${PORT:-8080}"
