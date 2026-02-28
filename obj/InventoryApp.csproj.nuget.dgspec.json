@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Itransition\\InventoryManagementApp\\InventoryApp\\InventoryApp.csproj": {}
+    "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj": {}
   },
   "projects": {
-    "D:\\Itransition\\InventoryManagementApp\\InventoryApp\\InventoryApp.csproj": {
+    "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Itransition\\InventoryManagementApp\\InventoryApp\\InventoryApp.csproj",
+        "projectUniqueName": "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
         "projectName": "InventoryApp",
-        "projectPath": "D:\\Itransition\\InventoryManagementApp\\InventoryApp\\InventoryApp.csproj",
+        "projectPath": "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
         "packagesPath": "C:\\Users\\Shohruz\\.nuget\\packages\\",
-        "outputPath": "D:\\Itransition\\InventoryManagementApp\\InventoryApp\\obj\\",
+        "outputPath": "D:\\Itransition\\InventoryManagementApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Shohruz\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -42,6 +42,34 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "AspNet.Security.OAuth.GitHub": {
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "Microsoft.AspNetCore.Authentication.Google": {
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": {
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.*, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
