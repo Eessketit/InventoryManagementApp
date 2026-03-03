@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using InventoryApp.Data;
 using InventoryApp.Middleware;
 using InventoryApp.Models;
@@ -18,7 +19,7 @@ var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 string connectionString;
 
 if (!string.IsNullOrWhiteSpace(databaseUrl))
-{
+{/*
     var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':', 2);
     var dbPort = uri.Port > 0 ? uri.Port : 5432;
@@ -36,7 +37,8 @@ if (!string.IsNullOrWhiteSpace(databaseUrl))
         $"Database={databaseName};" +
         $"Username={username};" +
         $"Password={password};" +
-        "SSL Mode=Require;Trust Server Certificate=true";
+        "SSL Mode=Require;Trust Server Certificate=true";*/
+    connectionString = BuildConnectionStringFromDatabaseUrl(databaseUrl);
 }
 else
 {
@@ -144,3 +146,37 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.Run();
+static string BuildConnectionStringFromDatabaseUrl(string databaseUrl)
+{
+    try
+    {
+        var builder = new NpgsqlConnectionStringBuilder(databaseUrl)
+        {
+            SslMode = SslMode.Require,
+            TrustServerCertificate = true
+        };
+
+        return builder.ConnectionString;
+    }
+    catch (ArgumentException)
+    {
+        var uri = new Uri(databaseUrl);
+        var userInfo = uri.UserInfo.Split(':', 2);
+
+        if (userInfo.Length != 2)
+            throw new InvalidOperationException("DATABASE_URL is missing username/password credentials.");
+
+        var builder = new NpgsqlConnectionStringBuilder
+        {
+            Host = uri.Host,
+            Port = uri.Port > 0 ? uri.Port : 5432,
+            Database = Uri.UnescapeDataString(uri.AbsolutePath.TrimStart('/')),
+            Username = Uri.UnescapeDataString(userInfo[0]),
+            Password = Uri.UnescapeDataString(userInfo[1]),
+            SslMode = SslMode.Require,
+            TrustServerCertificate = true
+        };
+
+        return builder.ConnectionString;
+    }
+}
