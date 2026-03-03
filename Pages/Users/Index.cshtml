@@ -1,0 +1,48 @@
+@page
+@model InventoryApp.Pages.Users.IndexModel
+@{
+    ViewData["Title"] = "My Profile";
+    var u = Model.ProfileUser;
+}
+
+<div class="d-flex align-items-center mb-4 gap-3">
+    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fs-3"
+         style="width:56px;height:56px;flex-shrink:0">
+        @(u?.Name?.Length > 0 ? u.Name[0].ToString().ToUpper() : "?")
+    </div>
+    <div>
+        <h2 class="mb-0 fw-bold">@u?.Name</h2>
+        <small class="text-muted">@u?.Email</small>
+        @if (u?.IsAdmin == true)
+        {
+            <span class="badge bg-warning text-dark ms-2">
+                <i class="bi bi-shield-fill me-1"></i>Admin
+            </span>
+        }
+    </div>
+</div>
+
+<div class="row g-3 mb-5">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Member since</div>
+                <div class="fw-semibold">@u?.RegisteredAt.ToString("MMMM d, yyyy")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Last login</div>
+                <div class="fw-semibold">@(u?.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Phase 3 will add the Owned Inventories and Accessible Inventories tables here -->
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    Inventory tables will appear here in the next phase.
+</div>

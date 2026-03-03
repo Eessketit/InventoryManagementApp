@@ -1,0 +1,136 @@
+@page
+@model InventoryApp.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h3 class="mb-3"><i class="bi bi-people-fill me-2"></i>User Management</h3>
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+    <div class="alert alert-@(TempData["StatusType"] ?? "info") alert-dismissible fade show" role="alert">
+        @statusMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form method="post">
+
+    <!-- TOOLBAR (no per-row buttons — spec requirement) -->
+    <div class="btn-toolbar mb-3 gap-2 flex-wrap" role="toolbar" aria-label="User management actions">
+
+        <button asp-page-handler="Block" class="btn btn-danger btn-sm" disabled id="btnBlock"
+                data-bs-toggle="tooltip" title="Block selected users">
+            <i class="bi bi-lock me-1"></i> Block
+        </button>
+
+        <button asp-page-handler="Unblock" class="btn btn-success btn-sm" disabled id="btnUnblock"
+                data-bs-toggle="tooltip" title="Unblock selected users">
+            <i class="bi bi-unlock me-1"></i> Unblock
+        </button>
+
+        <button asp-page-handler="MakeAdmin" class="btn btn-warning btn-sm" disabled id="btnMakeAdmin"
+                data-bs-toggle="tooltip" title="Grant admin access to selected users">
+            <i class="bi bi-shield-plus me-1"></i> Make Admin
+        </button>
+
+        <button asp-page-handler="RemoveAdmin" class="btn btn-outline-warning btn-sm" disabled id="btnRemoveAdmin"
+                data-bs-toggle="tooltip" title="Remove admin access (including yourself)">
+            <i class="bi bi-shield-minus me-1"></i> Remove Admin
+        </button>
+
+        <button asp-page-handler="Delete" class="btn btn-outline-danger btn-sm" disabled id="btnDelete"
+                data-bs-toggle="tooltip" title="Permanently delete selected users">
+            <i class="bi bi-trash me-1"></i> Delete
+        </button>
+
+    </div>
+
+    <!-- USERS TABLE -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" id="usersTable">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:40px">
+                        <input type="checkbox" id="selectAll" class="form-check-input" />
+                    </th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Registered</th>
+                    <th>Last login</th>
+                    <th>Status</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model.Users)
+                {
+                    var isBlocked = u.LockoutEnd.HasValue && u.LockoutEnd > DateTimeOffset.UtcNow;
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedIds" value="@u.Id"
+                                   class="form-check-input row-check" />
+                        </td>
+                        <td>
+                            <strong>@u.Name</strong>
+                        </td>
+                        <td class="text-muted">@u.Email</td>
+                        <td class="text-muted small">@u.RegisteredAt.ToString("yyyy-MM-dd")</td>
+                        <td class="text-muted small">
+                            @(u.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")
+                        </td>
+                        <td>
+                            @if (isBlocked)
+                            {
+                                <span class="badge bg-danger">Blocked</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                        </td>
+                        <td>
+                            @if (u.IsAdmin)
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-shield-fill me-1"></i>Admin
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">User</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script>
+        const selectAll = document.getElementById('selectAll');
+        const checks    = document.querySelectorAll('.row-check');
+        const buttons   = document.querySelectorAll(
+            '#btnBlock,#btnUnblock,#btnDelete,#btnMakeAdmin,#btnRemoveAdmin'
+        );
+
+        function updateButtons() {
+            const anyChecked = [...checks].some(c => c.checked);
+            buttons.forEach(b => b.disabled = !anyChecked);
+        }
+
+        selectAll.addEventListener('change', e => {
+            checks.forEach(c => c.checked = e.target.checked);
+            updateButtons();
+        });
+
+        checks.forEach(c => c.addEventListener('change', updateButtons));
+
+        // Bootstrap tooltips
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el =>
+            new bootstrap.Tooltip(el));
+    </script>
+}

@@ -1,0 +1,119 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
+using InventoryApp.Models;
+
+namespace InventoryApp.Pages.Auth;
+
+/// <summary>
+/// Handles the callback from Google / Facebook after the user approves access.
+/// - If the external account is already linked to a local user → sign them in.
+/// - If no local user exists yet → create one automatically.
+/// </summary>
+public class ExternalCallbackModel : PageModel
+{
+    private readonly SignInManager<AppUser> _signInManager;
+    private readonly UserManager<AppUser> _userManager;
+
+    public ExternalCallbackModel(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
+    {
+        _signInManager = signInManager;
+        _userManager = userManager;
+    }
+
+    public string? ErrorMessage { get; set; }
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var info = await _signInManager.GetExternalLoginInfoAsync();
+        if (info == null)
+        {
+            ErrorMessage = "Error loading external login information.";
+            return Page();
+        }
+
+        // Try to sign in using the existing external login link
+        var result = await _signInManager.ExternalLoginSignInAsync(
+            info.LoginProvider,
+            info.ProviderKey,
+            isPersistent: false,
+            bypassTwoFactor: true);
+
+        if (result.IsLockedOut)
+        {
+            ErrorMessage = "Your account has been blocked.";
+            return Page();
+        }
+
+        if (result.Succeeded)
+        {
+            // Update LastLoginAt
+            var existing = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (existing != null)
+            {
+                existing.LastLoginAt = DateTime.UtcNow;
+                await _userManager.UpdateAsync(existing);
+            }
+            return RedirectToPage("/Index");
+        }
+
+        // ── First time: auto-create the user ──────────────────────────────────
+        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ErrorMessage = "The external provider did not supply an email address.";
+            return Page();
+        }
+
+        // Re-use existing local account with the same email, if any
+        var user = await _userManager.FindByEmailAsync(email)
+                   ?? CreateUserFromExternal(info, email);
+
+        if (user.Id == Guid.Empty)
+        {
+            // Brand-new user — persist it
+            user.Id = Guid.NewGuid();
+            var createResult = await _userManager.CreateAsync(user);
+            if (!createResult.Succeeded)
+            {
+                ErrorMessage = string.Join("; ", createResult.Errors.Select(e => e.Description));
+                return Page();
+            }
+
+            // Seed app-level claims
+            await _userManager.AddClaimsAsync(user,
+            [
+                new Claim("DisplayName", user.Name),
+                new Claim("IsAdmin", "false"),
+                new Claim("Theme", "light"),
+                new Claim("Lang", "en"),
+            ]);
+        }
+
+        await _userManager.AddLoginAsync(user, info);
+
+        user.LastLoginAt = DateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+
+        await _signInManager.SignInAsync(user, isPersistent: false);
+        return RedirectToPage("/Index");
+    }
+
+    // ── helpers ───────────────────────────────────────────────────────────────
+
+    private static AppUser CreateUserFromExternal(ExternalLoginInfo info, string email)
+    {
+        var name = info.Principal.FindFirstValue(ClaimTypes.Name)
+                   ?? email.Split('@')[0];
+
+        return new AppUser
+        {
+            UserName = email,
+            Email = email,
+            Name = name,
+            EmailConfirmed = true,   // trusted — came from OAuth provider
+            RegisteredAt = DateTime.UtcNow,
+        };
+    }
+}

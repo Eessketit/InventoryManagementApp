@@ -1,0 +1,104 @@
+@page
+@model InventoryApp.Pages.Auth.LoginModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <h3 class="text-center mb-4">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign in
+                </h3>
+
+                @if (TempData["RegistrationSuccess"] is string msg)
+                {
+                    <div class="alert alert-success">@msg</div>
+                }
+
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label"></label>
+                        <input asp-for="Input.Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Input.Password" type="password" class="form-control"
+                                   id="passwordInput" autocomplete="current-password" />
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="togglePwd('passwordInput', this)"
+                                    aria-label="Toggle password visibility">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="Input.RememberMe" class="form-check-input" />
+                        <label asp-for="Input.RememberMe" class="form-check-label"></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                    </button>
+                </form>
+
+                @if (Model.ExternalProviders.Count > 0)
+                {
+                    <hr class="my-4" />
+                    <p class="text-center text-muted small mb-3">Or sign in with</p>
+                    <div class="d-grid gap-2">
+                        @foreach (var provider in Model.ExternalProviders)
+                        {
+                            <form method="post" asp-page-handler="ExternalLogin">
+                                <input type="hidden" name="provider" value="@provider.Name" />
+                                <button type="submit" class="btn btn-outline-secondary w-100">
+                                    @if (provider.Name == "Google")
+                                    {
+                                        <i class="bi bi-google me-2"></i>
+                                    }
+                                    else if (provider.Name == "Facebook")
+                                    {
+                                        <i class="bi bi-facebook me-2"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    }
+                                    Continue with @provider.DisplayName
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+
+                <div class="text-center mt-3">
+                    <small>
+                        Don't have an account?
+                        <a asp-page="/Auth/Register">Register</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePwd(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.querySelector('i').className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+        }
+    </script>
+}

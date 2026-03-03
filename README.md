@@ -1,6 +1,6 @@
 # InventoryManagementApp
 
-- [x] Blazor app
+- [x] Mvc
 1. - [ ] ORM
 2. - [ ] Full text search
 
