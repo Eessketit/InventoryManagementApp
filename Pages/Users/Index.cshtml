@@ -3,46 +3,83 @@
 @{
     ViewData["Title"] = "My Profile";
     var u = Model.ProfileUser;
+    var isAdmin = u?.IsAdmin == true;
+    var isBlocked = u?.LockoutEnd.HasValue == true && u.LockoutEnd > DateTimeOffset.UtcNow;
 }
 
-<div class="d-flex align-items-center mb-4 gap-3">
-    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fs-3"
-         style="width:56px;height:56px;flex-shrink:0">
+<!-- Profile header -->
+<div class="d-flex align-items-center mb-4 gap-3 flex-wrap">
+    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fs-2 fw-bold flex-shrink-0"
+         style="width:64px;height:64px">
         @(u?.Name?.Length > 0 ? u.Name[0].ToString().ToUpper() : "?")
     </div>
     <div>
-        <h2 class="mb-0 fw-bold">@u?.Name</h2>
-        <small class="text-muted">@u?.Email</small>
-        @if (u?.IsAdmin == true)
-        {
-            <span class="badge bg-warning text-dark ms-2">
-                <i class="bi bi-shield-fill me-1"></i>Admin
-            </span>
-        }
+        <h2 class="mb-1 fw-bold">@u?.Name</h2>
+        <div class="text-muted small mb-2">@u?.Email</div>
+        <div class="d-flex gap-2 flex-wrap">
+            @if (isAdmin)
+            {
+                <span class="badge bg-warning text-dark">
+                    <i class="bi bi-shield-fill me-1"></i>Admin
+                </span>
+            }
+            else
+            {
+                <span class="badge bg-primary">
+                    <i class="bi bi-person-fill me-1"></i>Member
+                </span>
+            }
+
+            @if (isBlocked)
+            {
+                <span class="badge bg-danger">
+                    <i class="bi bi-lock-fill me-1"></i>Blocked
+                </span>
+            }
+            else
+            {
+                <span class="badge bg-success">
+                    <i class="bi bi-check-circle-fill me-1"></i>Active
+                </span>
+            }
+        </div>
     </div>
 </div>
 
+<!-- Stats row -->
 <div class="row g-3 mb-5">
-    <div class="col-md-4">
+    <div class="col-sm-6 col-md-4">
         <div class="card h-100">
             <div class="card-body">
-                <div class="text-muted small">Member since</div>
+                <div class="text-muted small mb-1">Member since</div>
                 <div class="fw-semibold">@u?.RegisteredAt.ToString("MMMM d, yyyy")</div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-sm-6 col-md-4">
         <div class="card h-100">
             <div class="card-body">
-                <div class="text-muted small">Last login</div>
-                <div class="fw-semibold">@(u?.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</div>
+                <div class="text-muted small mb-1">Last login</div>
+                <div class="fw-semibold">@(u?.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Theme / Language</div>
+                <div class="fw-semibold">
+                    @(u?.ThemePreference == "dark" ? "🌙 Dark" : "☀️ Light")
+                    &nbsp;·&nbsp;
+                    @(u?.LanguagePreference?.ToUpper() ?? "EN")
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Phase 3 will add the Owned Inventories and Accessible Inventories tables here -->
-<div class="alert alert-info">
-    <i class="bi bi-info-circle me-2"></i>
-    Inventory tables will appear here in the next phase.
+<!-- Phase 3: Inventory tables will go here -->
+<div class="alert alert-info d-flex align-items-center gap-2" role="alert">
+    <i class="bi bi-info-circle-fill fs-5"></i>
+    <span>Your inventory tables will appear here in the next phase of development.</span>
 </div>

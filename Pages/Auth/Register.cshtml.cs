@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using InventoryApp.Models;
 
 namespace InventoryApp.Pages.Auth;
@@ -14,7 +13,7 @@ public class RegisterModel : PageModel
 
     public RegisterModel(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
     {
-        _userManager = userManager;
+        _userManager   = userManager;
         _signInManager = signInManager;
     }
 
@@ -29,8 +28,7 @@ public class RegisterModel : PageModel
         [Required, MinLength(2), Display(Name = "Display name")]
         public string Name { get; set; } = string.Empty;
 
-        [Required, MinLength(6), Display(Name = "Password")]
-        [DataType(DataType.Password)]
+        [Required, MinLength(6), DataType(DataType.Password), Display(Name = "Password")]
         public string Password { get; set; } = string.Empty;
     }
 
@@ -41,10 +39,10 @@ public class RegisterModel : PageModel
 
         var user = new AppUser
         {
-            Id = Guid.NewGuid(),
-            UserName = Input.Email.Trim(),
-            Email = Input.Email.Trim(),
-            Name = Input.Name.Trim(),
+            Id           = Guid.NewGuid(),
+            UserName     = Input.Email.Trim(),
+            Email        = Input.Email.Trim(),
+            Name         = Input.Name.Trim(),
             RegisteredAt = DateTime.UtcNow,
         };
 
@@ -57,16 +55,9 @@ public class RegisterModel : PageModel
             return Page();
         }
 
-        // Add app-level claims to the cookie directly
-        await _userManager.AddClaimsAsync(user,
-        [
-            new Claim("DisplayName", user.Name),
-            new Claim("IsAdmin", user.IsAdmin ? "true" : "false"),
-            new Claim("Theme", user.ThemePreference),
-            new Claim("Lang", user.LanguagePreference),
-        ]);
-
-        TempData["RegistrationSuccess"] = "Account created! Please sign in.";
-        return RedirectToPage("/Auth/Login");
+        // Auto-sign-in after registration — AppUserClaimsPrincipalFactory
+        // builds all necessary claims (IsAdmin=false, Theme=light, etc.)
+        await _signInManager.SignInAsync(user, isPersistent: false);
+        return RedirectToPage("/Users/Index");
     }
 }
