@@ -23,12 +23,19 @@ if (!string.IsNullOrWhiteSpace(databaseUrl))
     var userInfo = uri.UserInfo.Split(':', 2);
     var dbPort = uri.Port > 0 ? uri.Port : 5432;
 
+    if (userInfo.Length != 2)
+        throw new InvalidOperationException("DATABASE_URL is missing username/password credentials.");
+
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = Uri.UnescapeDataString(userInfo[1]);
+    var databaseName = Uri.UnescapeDataString(uri.AbsolutePath.TrimStart('/'));
+
     connectionString =
         $"Host={uri.Host};" +
         $"Port={dbPort};" +
-        $"Database={uri.AbsolutePath.TrimStart('/')};" +
-        $"Username={userInfo[0]};" +
-        $"Password={userInfo[1]};" +
+        $"Database={databaseName};" +
+        $"Username={username};" +
+        $"Password={password};" +
         "SSL Mode=Require;Trust Server Certificate=true";
 }
 else
@@ -72,10 +79,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // ── OAUTH ────────────────────────────────────────────────────────────────────
-var googleClientId     = builder.Configuration["Authentication:Google:ClientId"];
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
 var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-var fbAppId            = builder.Configuration["Authentication:Facebook:AppId"];
-var fbAppSecret        = builder.Configuration["Authentication:Facebook:AppSecret"];
+var fbAppId = builder.Configuration["Authentication:Facebook:AppId"];
+var fbAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
 
 // Only wire up providers when credentials are present —
 // keeps the dev environment working without secrets configured.
