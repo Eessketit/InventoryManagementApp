@@ -20,4 +20,4 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 COPY --from=build /app/publish .
 
 # Start app
-ENTRYPOINT ["dotnet", "UserManagementApp.dll"]
+ENTRYPOINT ["dotnet", "InventoryApp.dll"]
