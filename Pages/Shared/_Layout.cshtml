@@ -74,16 +74,17 @@
 
                             <!-- Theme toggle -->
                             <li class="nav-item">
-                                <form method="post" asp-page="/Api/Preferences" asp-page-handler="Theme">
-                                    @{
-                                        var currentTheme = User.FindFirst("Theme")?.Value ?? "light";
-                                    }
-                                    <input type="hidden" name="theme"
-                                           value="@(currentTheme == "light" ? "dark" : "light")" />
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary border-0"
-                                            title="Toggle theme" aria-label="Toggle dark/light theme">
-                                        <i class="bi @(currentTheme == "dark" ? "bi-sun" : "bi-moon")"></i>
-                                    </button>
+                                @{
+                                    var currentTheme = User.FindFirst("Theme")?.Value ?? "light";
+                                }
+                                <button type="button" id="themeToggleBtn"
+                                        class="btn btn-sm btn-outline-secondary border-0 mt-1"
+                                        title="Toggle theme" aria-label="Toggle dark/light theme">
+                                    <i id="themeToggleIcon" class="bi @(currentTheme == "dark" ? "bi-sun" : "bi-moon")"></i>
+                                </button>
+                                <!-- Form needed just to generate the AntiForgery token for our JS -->
+                                <form id="themeForm" method="post" asp-page="/Api/Preferences" asp-page-handler="Theme" style="display:none;">
+                                    <input type="hidden" name="theme" id="themeInput" value="" />
                                 </form>
                             </li>
 
@@ -122,6 +123,46 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('themeToggleBtn');
+            const icon = document.getElementById('themeToggleIcon');
+            const htmlTag = document.documentElement;
+            const themeForm = document.getElementById('themeForm');
+            const themeInput = document.getElementById('themeInput');
+
+            // Override with localStorage if it exists so we immediately sync UI
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                htmlTag.setAttribute('data-bs-theme', storedTheme);
+                icon.className = storedTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+            }
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', async () => {
+                    const currentTheme = htmlTag.getAttribute('data-bs-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                    // 1. Update UI Instantly
+                    htmlTag.setAttribute('data-bs-theme', newTheme);
+                    icon.className = newTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+                    localStorage.setItem('theme', newTheme);
+
+                    // 2. Sync to Server in background
+                    if (themeForm) {
+                        themeInput.value = newTheme;
+                        const formData = new FormData(themeForm);
+                        try {
+                            await fetch(themeForm.action, {
+                                method: 'POST',
+                                body: formData
+                            });
+                        } catch (e) { console.error('Failed to sync theme to server', e); }
+                    }
+                });
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
