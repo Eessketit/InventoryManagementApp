@@ -1,0 +1,859 @@
+@page "{id:guid}"
+@model InventoryApp.Pages.Inventories.DetailModel
+@using InventoryApp.Models
+@{
+    ViewData["Title"] = Model.Inventory.Title;
+    var inv    = Model.Inventory;
+    var fields = Model.Fields;
+    var canEdit  = Model.CanEdit;
+    var canWrite = Model.CanWrite;
+    var visibleFields = fields.Where(f => f.ShowInTable).ToList();
+}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+        <li class="breadcrumb-item"><a asp-page="/Inventories/Index">Inventories</a></li>
+        <li class="breadcrumb-item active">@inv.Title</li>
+    </ol>
+</nav>
+
+<!-- Header -->
+<div class="d-flex align-items-start justify-content-between mb-3 flex-wrap gap-2">
+    <div>
+        <h2 class="mb-1 fw-bold">@inv.Title</h2>
+        <div class="text-muted small">
+            <i class="bi bi-person me-1"></i>@inv.Owner.Name
+            @if (!string.IsNullOrWhiteSpace(inv.Category))
+            {
+                <span class="ms-2"><i class="bi bi-tag me-1"></i>@inv.Category</span>
+            }
+            @if (inv.IsPublic)
+            {
+                <span class="ms-2 badge bg-success">Public</span>
+            }
+        </div>
+    </div>
+    @if (canEdit)
+    {
+        <form method="post" asp-page-handler="DeleteInventory"
+              onsubmit="return confirm('Delete this entire inventory and all its items?')">
+            <input type="hidden" name="id" value="@inv.Id" />
+            <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash me-1"></i>Delete Inventory
+            </button>
+        </form>
+    }
+</div>
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger alert-dismissible fade show">@err
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-3" id="invTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link @(Model.ActiveTab=="items"?"active":"")"
+           href="?tab=items#invTabs">
+            <i class="bi bi-list-ul me-1"></i>Items
+            <span class="badge bg-secondary ms-1">@Model.Items.Count</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.ActiveTab=="discussion"?"active":"")"
+           href="?tab=discussion#invTabs">
+            <i class="bi bi-chat-dots me-1"></i>Discussion
+            <span class="badge bg-secondary ms-1">@Model.Comments.Count</span>
+        </a>
+    </li>
+    @if (canEdit)
+    {
+        <li class="nav-item">
+            <a class="nav-link @(Model.ActiveTab=="settings"?"active":"")"
+               href="?tab=settings#invTabs">
+                <i class="bi bi-gear me-1"></i>Settings
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(Model.ActiveTab=="customid"?"active":"")"
+               href="?tab=customid#invTabs">
+                <i class="bi bi-fingerprint me-1"></i>Custom ID
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(Model.ActiveTab=="access"?"active":"")"
+               href="?tab=access#invTabs">
+                <i class="bi bi-shield-lock me-1"></i>Access
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(Model.ActiveTab=="fields"?"active":"")"
+               href="?tab=fields#invTabs">
+                <i class="bi bi-layout-three-columns me-1"></i>Fields
+            </a>
+        </li>
+    }
+    <li class="nav-item">
+        <a class="nav-link @(Model.ActiveTab=="stats"?"active":"")"
+           href="?tab=stats#invTabs">
+            <i class="bi bi-bar-chart me-1"></i>Stats
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+
+    <!-- ══ TAB 1: ITEMS ══════════════════════════════════════════════════════ -->
+    <div class="@(Model.ActiveTab=="items"?"d-block":"d-none")">
+        @if (canWrite)
+        {
+            <div class="mb-3">
+                <a asp-page="/Items/Edit" asp-route-inventoryId="@inv.Id"
+                   class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Add Item
+                </a>
+            </div>
+        }
+
+        @if (!Model.Items.Any())
+        {
+            <p class="text-muted">No items yet. @(canWrite ? "Use the button above to add one." : "")</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-sm">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Added by</th>
+                            <th>Date</th>
+                            @foreach (var f in visibleFields)
+                            {
+                                <th title="@f.Description">@f.Title</th>
+                            }
+                            <th>❤</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr class="cursor-pointer"
+                                onclick="location.href='@Url.Page("/Items/Edit", new { id = item.Id })'">
+                                <td class="fw-semibold font-monospace">@item.CustomId</td>
+                                <td class="text-muted small">@item.CreatedByName</td>
+                                <td class="text-muted small">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                @for (int vi = 0; vi < item.Values.Length; vi++)
+                                {
+                                    <td class="small">@item.Values[vi]</td>
+                                }
+                                <td class="small">@item.LikeCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- ══ TAB 2: DISCUSSION ═════════════════════════════════════════════════ -->
+    <div class="@(Model.ActiveTab=="discussion"?"d-block":"d-none")">
+        <div id="commentsList" style="max-height:480px;overflow-y:auto" class="mb-4">
+            @if (!Model.Comments.Any())
+            {
+                <p class="text-muted">No posts yet. Be the first!</p>
+            }
+            @foreach (var c in Model.Comments)
+            {
+                <div class="card mb-2">
+                    <div class="card-body py-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong>
+                                <a asp-page="/Users/Index" asp-route-userId="@c.AuthorId"
+                                   class="text-decoration-none">@c.Author.Name</a>
+                            </strong>
+                            <span class="text-muted small">@c.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                        </div>
+                        <div class="markdown-body">@Html.Raw(new InventoryApp.Services.MarkdownService().ToHtml(c.Body))</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <form method="post" asp-page-handler="AddComment">
+                <input type="hidden" name="id" value="@inv.Id" />
+                <div class="mb-2">
+                    <textarea name="body" class="form-control" rows="3"
+                              placeholder="Write a comment… (Markdown supported)"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-send me-1"></i>Post
+                </button>
+            </form>
+        }
+        else
+        {
+            <p class="text-muted small">
+                <a asp-page="/Auth/Login">Sign in</a> to post a comment.
+            </p>
+        }
+    </div>
+
+    <!-- ══ TAB 3: SETTINGS ══════════════════════════════════════════════════ -->
+    @if (canEdit)
+    {
+    <div class="@(Model.ActiveTab=="settings"?"d-block":"d-none")">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span id="saveStatus" class="text-muted small"></span>
+        </div>
+
+        <form id="settingsForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@inv.Id" />
+
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Title</label>
+                    <input name="settings.Title" class="form-control" value="@inv.Title" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Category</label>
+                    <select name="settings.Category" class="form-select">
+                        <option value="">— none —</option>
+                        @foreach (var cat in InventoryApp.Pages.Inventories.DetailModel.Categories)
+                        {
+                            @if (inv.Category == cat)
+                            {
+                                <option value="@cat" selected>@cat</option>
+                            }
+                            else
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">
+                        Description <span class="fw-normal text-muted">(Markdown)</span>
+                    </label>
+                    <textarea name="settings.Description" id="descTextarea"
+                              class="form-control font-monospace" rows="6">@inv.Description</textarea>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Markdown Preview</label>
+                    <div id="descPreview" class="border rounded p-3 markdown-body bg-body-tertiary"
+                         style="min-height:80px">@Html.Raw(Model.DescHtml)</div>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Image URL <span class="fw-normal text-muted">(Cloudinary or any CDN)</span></label>
+                    <input name="settings.ImageUrl" class="form-control"
+                           value="@inv.ImageUrl" placeholder="https://…" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="form-check mb-2">
+                        <input name="settings.IsPublic" type="checkbox" class="form-check-input"
+                               @(inv.IsPublic ? "checked" : "") value="true" id="chkPublic" />
+                        <input name="settings.IsPublic" type="hidden" value="false" />
+                        <label for="chkPublic" class="form-check-label fw-semibold">
+                            Public inventory
+                        </label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">
+                        Tags <span class="fw-normal text-muted">(autocomplete)</span>
+                    </label>
+                    <input name="settings.Tags" id="tagsInput" class="form-control"
+                           value="@Model.TagsCsv" placeholder="Add tags…" />
+                </div>
+            </div>
+        </form>
+    </div>
+    }
+
+    <!-- ══ TAB 4: CUSTOM ID ═════════════════════════════════════════════════ -->
+    @if (canEdit)
+    {
+    <div class="@(Model.ActiveTab=="customid"?"d-block":"d-none")">
+        <p class="text-muted small mb-3">
+            Drag elements from the palette to build a custom ID format. Reorder via drag-and-drop.
+            Generated IDs are unique per inventory. A maximum of 10 elements is recommended.
+        </p>
+
+        <!-- Palette -->
+        <div class="mb-3">
+            <strong class="small d-block mb-2">Element palette — click to add:</strong>
+            <div class="d-flex flex-wrap gap-2" id="palette">
+                @foreach (var et in Enum.GetValues<IdElementType>())
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            onclick="addElement('@((int)et)', '@et')"
+                            data-bs-toggle="popover"
+                            data-bs-content="@GetElementHelp(et)"
+                            data-bs-trigger="hover">
+                        @GetElementLabel(et)
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Current elements (drag-and-drop) -->
+        <div class="mb-3">
+            <strong class="small d-block mb-2">Current format:</strong>
+            <div id="elementList" class="border rounded p-2 d-flex flex-wrap gap-2"
+                 style="min-height:56px">
+                @foreach (var el in Model.IdElements)
+                {
+                    @await Html.PartialAsync("_IdElement", el)
+                }
+            </div>
+        </div>
+
+        <!-- Live preview -->
+        <div class="mb-3">
+            <strong class="small">Preview:</strong>
+            <code class="ms-2 fs-6" id="idPreview">@InventoryApp.Services.CustomIdService.GetPreview(Model.IdElements)</code>
+        </div>
+
+        <form method="post" asp-page-handler="SaveCustomId" id="customIdForm">
+            <input type="hidden" name="id" value="@inv.Id" />
+            <div id="hiddenElements"></div>
+            <button type="submit" class="btn btn-primary btn-sm" onclick="serializeElements()">
+                <i class="bi bi-save me-1"></i>Save ID Format
+            </button>
+        </form>
+    </div>
+    }
+
+    <!-- ══ TAB 5: ACCESS ════════════════════════════════════════════════════ -->
+    @if (canEdit)
+    {
+    <div class="@(Model.ActiveTab=="access"?"d-block":"d-none")">
+        <form method="post" asp-page-handler="SaveAccess">
+            <input type="hidden" name="id" value="@inv.Id" />
+
+            <div class="mb-3 form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="chkAccessPublic"
+                       name="isPublic" @(inv.IsPublic ? "checked" : "") value="true" />
+                <input type="hidden" name="isPublic" value="false" />
+                <label class="form-check-label fw-semibold" for="chkAccessPublic">
+                    Public — any authenticated user can add items
+                </label>
+            </div>
+
+            <!-- User access list -->
+            <div id="accessListSection">
+                <label class="fw-semibold mb-2 d-block">Users with write access:</label>
+
+                <!-- Toolbar -->
+                <div class="btn-toolbar mb-2 gap-2">
+                    <button type="submit" name="removeUserIds"
+                            class="btn btn-outline-danger btn-sm" id="btnRemoveUsers" disabled>
+                        <i class="bi bi-person-dash me-1"></i>Remove Selected
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="bi bi-person-plus me-1"></i>Add User
+                    </button>
+                </div>
+
+                @if (!inv.AccessList.Any())
+                {
+                    <p class="text-muted small">No specific users added yet.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th style="width:40px"></th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var access in inv.AccessList.OrderBy(a => a.User.Name))
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="removeUserIds"
+                                                   value="@access.UserId"
+                                                   class="form-check-input access-check" />
+                                        </td>
+                                        <td>@access.User.Name</td>
+                                        <td class="text-muted small">@access.User.Email</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm mt-2">
+                <i class="bi bi-save me-1"></i>Save Access Settings
+            </button>
+        </form>
+
+        <!-- Add User Modal -->
+        <div class="modal fade" id="addUserModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="post" asp-page-handler="SaveAccess">
+                        <input type="hidden" name="id" value="@inv.Id" />
+                        <input type="hidden" name="isPublic" value="@inv.IsPublic.ToString().ToLower()" />
+                        <div class="modal-body">
+                            <label class="form-label">Search by name or email:</label>
+                            <select id="userSelect" name="addUserIds" class="form-control" multiple></select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-person-check me-1"></i>Add
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm"
+                                    data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- ══ TAB 6: FIELDS ════════════════════════════════════════════════════ -->
+    @if (canEdit)
+    {
+    <div class="@(Model.ActiveTab=="fields"?"d-block":"d-none")">
+        <!-- Add field buttons -->
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            @foreach (var ft in Enum.GetValues<FieldType>())
+            {
+                <form method="post" asp-page-handler="AddField" class="d-inline">
+                    <input type="hidden" name="id" value="@inv.Id" />
+                    <input type="hidden" name="type" value="@((int)ft)" />
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-plus me-1"></i>@ft
+                    </button>
+                </form>
+            }
+        </div>
+
+        @if (!fields.Any())
+        {
+            <p class="text-muted">No custom fields yet. Use the buttons above to add some.</p>
+        }
+        else
+        {
+            <form method="post" asp-page-handler="SaveFields" id="fieldsForm">
+                <input type="hidden" name="id" value="@inv.Id" />
+
+                <!-- Toolbar -->
+                <div class="btn-toolbar mb-3 gap-2">
+                    <button type="button" class="btn btn-outline-danger btn-sm"
+                            id="btnDeleteFields" disabled
+                            onclick="submitDeleteFields()">
+                        <i class="bi bi-trash me-1"></i>Delete Selected
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-save me-1"></i>Save Fields
+                    </button>
+                </div>
+
+                <div id="fieldsList">
+                    @for (int fi = 0; fi < fields.Count; fi++)
+                    {
+                        var f = fields[fi];
+                        <div class="card mb-2 field-card" data-field-id="@f.Id" draggable="true">
+                            <div class="card-body py-2 px-3">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <i class="bi bi-grip-vertical text-muted" style="cursor:grab"></i>
+                                    <input type="checkbox" name="selectedFieldIds" value="@f.Id"
+                                           class="form-check-input field-check" />
+                                    <span class="badge bg-secondary">@f.Type slot @f.Slot</span>
+
+                                    <input type="hidden" name="fieldUpdates[@fi].FieldId" value="@f.Id" />
+                                    <input type="hidden" name="fieldUpdates[@fi].DisplayOrder" value="@f.DisplayOrder" class="order-input" />
+
+                                    <input name="fieldUpdates[@fi].Title" class="form-control form-control-sm"
+                                           value="@f.Title" placeholder="Title" style="max-width:200px" />
+                                    <input name="fieldUpdates[@fi].Description" class="form-control form-control-sm"
+                                           value="@f.Description" placeholder="Tooltip/hint" style="max-width:240px" />
+
+                                    <div class="form-check ms-2">
+                                        <input type="checkbox" name="fieldUpdates[@fi].ShowInTable"
+                                               class="form-check-input" value="true"
+                                               @(f.ShowInTable ? "checked" : "") />
+                                        <input type="hidden" name="fieldUpdates[@fi].ShowInTable" value="false" />
+                                        <label class="form-check-label small">Show in table</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </form>
+
+            <form method="post" asp-page-handler="DeleteFields" id="deleteFieldsForm">
+                <input type="hidden" name="id" value="@inv.Id" />
+                <div id="deleteFieldsHidden"></div>
+            </form>
+        }
+    </div>
+    }
+
+    <!-- ══ TAB 7: STATS ══════════════════════════════════════════════════════ -->
+    <div class="@(Model.ActiveTab=="stats"?"d-block":"d-none")">
+        <div class="row g-3">
+            <div class="col-sm-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="display-6 fw-bold">@Model.Stats.ItemCount</div>
+                        <div class="text-muted small">Total Items</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @{ var numFields2 = fields.Where(f => f.Type == FieldType.Number).ToList(); }
+        @if (numFields2.Any())
+        {
+            <h6 class="mt-4">Numeric fields</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead class="table-secondary">
+                        <tr><th>Field</th><th>Min</th><th>Max</th><th>Avg</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var nf in numFields2)
+                        {
+                            var stat = Model.Stats.Numbers[nf.Slot - 1];
+                            <tr>
+                                <td>@nf.Title</td>
+                                <td>@(stat?.Min.ToString("G") ?? "—")</td>
+                                <td>@(stat?.Max.ToString("G") ?? "—")</td>
+                                <td>@(stat?.Avg.ToString("G4") ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @{ var txtFields2 = fields.Where(f => f.Type == FieldType.Text).ToList(); }
+        @if (txtFields2.Any())
+        {
+            <h6 class="mt-3">Top text values</h6>
+            @foreach (var tf in txtFields2)
+            {
+                var tops = Model.Stats.TopTexts[tf.Slot - 1];
+                if (tops == null || !tops.Any()) continue;
+                <div class="mb-2">
+                    <strong class="small">@tf.Title:</strong>
+                    @foreach (var top in tops)
+                    {
+                        <span class="badge bg-primary ms-1">@top</span>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+</div><!-- end tab-content -->
+
+@section Scripts {
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@yaireo/tagify/dist/tagify.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@@yaireo/tagify/dist/tagify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .markdown-body img { max-width: 100%; }
+    .element-chip { cursor: grab; user-select: none; }
+    #elementList .element-chip { transition: opacity .15s; }
+</style>
+<script>
+// ── Tags (Tagify) ─────────────────────────────────────────────────────────────
+var tagify = new Tagify(document.getElementById('tagsInput'), {
+    delimiters: ',',
+    dropdown: {
+        enabled: 0,
+        searchKeys: ['value']
+    },
+    whitelist: [],
+    callbacks: {
+        input: onTagInput
+    }
+});
+
+async function onTagInput(e) {
+    const prefix = e.detail.value;
+    if (!prefix || prefix.length < 1) return;
+    const res = await fetch('/Api/Tags?prefix=' + encodeURIComponent(prefix));
+    const tags = await res.json();
+    tagify.settings.whitelist = tags;
+    tagify.dropdown.show(prefix);
+}
+
+// ── Auto-save (Settings tab) ─────────────────────────────────────────────────
+let isDirty = false;
+let isSaving = false;
+const statusEl = document.getElementById('saveStatus');
+const settingsForm = document.getElementById('settingsForm');
+
+if (settingsForm) {
+    settingsForm.querySelectorAll('input,textarea,select').forEach(el => {
+        el.addEventListener('input', () => isDirty = true);
+        el.addEventListener('change', () => isDirty = true);
+    });
+
+    // Markdown preview
+    const descTA = document.getElementById('descTextarea');
+    const preview = document.getElementById('descPreview');
+    if (descTA && preview) {
+        descTA.addEventListener('input', debounce(async () => {
+            const res = await fetch('/Api/MarkdownPreview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': getToken() },
+                body: 'markdown=' + encodeURIComponent(descTA.value)
+            });
+            if (res.ok) preview.innerHTML = await res.text();
+        }, 600));
+    }
+
+    setInterval(async () => {
+        if (!isDirty || isSaving) return;
+        isSaving = true;
+        isDirty = false;
+        if (statusEl) statusEl.textContent = 'Saving…';
+
+        // Sync Tagify value back to hidden input
+        const tagValues = tagify.value.map(t => t.value).join(',');
+        settingsForm.querySelector('[name="settings.Tags"]').value = tagValues;
+
+        const fd = new FormData(settingsForm);
+        // Handle checkbox: if not checked it won't be in FormData
+        if (!settingsForm.querySelector('#chkPublic')?.checked) {
+            fd.set('settings.IsPublic', 'false');
+        }
+        fd.set('__RequestVerificationToken', getToken());
+
+        try {
+            const res = await fetch('?handler=AutoSave', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (statusEl) statusEl.textContent = data.success ? '✓ Saved' : '⚠ ' + data.message;
+        } catch { if (statusEl) statusEl.textContent = '⚠ Save failed'; isDirty = true; }
+        finally { isSaving = false; }
+    }, 8000);
+}
+
+function getToken() {
+    return document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+}
+function debounce(fn, ms) {
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+// ── Access tab ────────────────────────────────────────────────────────────────
+const accessChecks = document.querySelectorAll('.access-check');
+const btnRemoveUsers = document.getElementById('btnRemoveUsers');
+accessChecks.forEach(c => c.addEventListener('change', () => {
+    if (btnRemoveUsers) btnRemoveUsers.disabled = ![...accessChecks].some(x => x.checked);
+}));
+
+// Tom Select for user autocomplete
+const userSelectEl = document.getElementById('userSelect');
+if (userSelectEl) {
+    new TomSelect('#userSelect', {
+        valueField: 'id',
+        labelField: 'name',
+        searchField: ['name', 'email'],
+        load: function(query, callback) {
+            if (!query.length || query.length < 2) return callback();
+            fetch('/Api/UserSearch?q=' + encodeURIComponent(query))
+                .then(r => r.json()).then(callback).catch(() => callback());
+        },
+        render: {
+            option: (data) => `<div>${data.name} <small class="text-muted">${data.email}</small></div>`
+        },
+        placeholder: 'Type name or email…'
+    });
+}
+
+// ── Fields toolbar ────────────────────────────────────────────────────────────
+const fieldChecks = document.querySelectorAll('.field-check');
+const btnDeleteFields = document.getElementById('btnDeleteFields');
+fieldChecks.forEach(c => c.addEventListener('change', () => {
+    if (btnDeleteFields) btnDeleteFields.disabled = ![...fieldChecks].some(x => x.checked);
+}));
+
+function submitDeleteFields() {
+    const form = document.getElementById('deleteFieldsForm');
+    const container = document.getElementById('deleteFieldsHidden');
+    container.innerHTML = '';
+    fieldChecks.forEach(c => {
+        if (c.checked) {
+            const inp = document.createElement('input');
+            inp.type = 'hidden'; inp.name = 'selectedFieldIds'; inp.value = c.value;
+            container.appendChild(inp);
+        }
+    });
+    form.submit();
+}
+
+// SortableJS for fields list
+const fieldsList = document.getElementById('fieldsList');
+if (fieldsList) {
+    Sortable.create(fieldsList, {
+        animation: 150,
+        handle: '.bi-grip-vertical',
+        onEnd: () => {
+            // Update display order hidden inputs after drag
+            fieldsList.querySelectorAll('.field-card').forEach((card, idx) => {
+                card.querySelector('.order-input').value = idx;
+            });
+        }
+    });
+}
+
+// ── Custom ID builder ─────────────────────────────────────────────────────────
+const elementList = document.getElementById('elementList');
+let elementData = [];
+
+// Seed from server-rendered elements
+document.querySelectorAll('.element-chip').forEach(chip => {
+    elementData.push({
+        type: chip.dataset.type,
+        typeName: chip.dataset.typeName,
+        config: chip.dataset.config || '{}'
+    });
+});
+
+function addElement(type, typeName) {
+    if (elementData.length >= 10) { alert('Maximum 10 elements recommended.'); return; }
+    const config = type == '1' ? JSON.stringify({ text: 'TEXT-' }) : '{}';
+    elementData.push({ type, typeName, config });
+    renderElements();
+    updatePreview();
+}
+
+function renderElements() {
+    if (!elementList) return;
+    elementList.innerHTML = '';
+    elementData.forEach((el, i) => {
+        const chip = document.createElement('div');
+        chip.className = 'badge bg-primary element-chip d-flex align-items-center gap-1 p-2 fs-6';
+        chip.dataset.index = i;
+        chip.innerHTML = `<i class="bi bi-grip-horizontal"></i><span>${el.typeName}</span>`
+            + (el.type == '1' ? `<input class="form-control form-control-sm ms-1" style="width:80px;color:#000"
+                value="${JSON.parse(el.config).text||''}"
+                onchange="updateConfig(${i},this.value)" />` : '')
+            + `<button type="button" class="btn-close btn-close-white ms-1" onclick="removeElement(${i})"></button>`;
+        elementList.appendChild(chip);
+    });
+}
+
+function updateConfig(i, text) {
+    elementData[i].config = JSON.stringify({ text });
+    updatePreview();
+}
+
+function removeElement(i) {
+    elementData.splice(i, 1);
+    renderElements();
+    updatePreview();
+}
+
+async function updatePreview() {
+    const previewEl = document.getElementById('idPreview');
+    if (!previewEl) return;
+    const payload = elementData.map((e, i) => ({
+        elementType: parseInt(e.type),
+        config: e.config
+    }));
+    try {
+        const fd = new FormData();
+        fd.set('__RequestVerificationToken', getToken());
+        payload.forEach((p, i) => {
+            fd.set(`elements[${i}].elementType`, p.elementType);
+            fd.set(`elements[${i}].config`, p.config);
+        });
+        const res = await fetch('?handler=PreviewCustomId', { method: 'POST', body: fd });
+        const data = await res.json();
+        previewEl.textContent = data.preview;
+    } catch {}
+}
+
+function serializeElements() {
+    const form = document.getElementById('customIdForm');
+    const container = document.getElementById('hiddenElements');
+    container.innerHTML = '';
+    elementData.forEach((el, i) => {
+        [['elementType', el.type], ['config', el.config]].forEach(([k, v]) => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = `elements[${i}].${k}`;
+            inp.value = v;
+            container.appendChild(inp);
+        });
+    });
+}
+
+if (elementList) {
+    Sortable.create(elementList, {
+        animation: 150,
+        onEnd: () => {
+            const reordered = [...elementList.querySelectorAll('.element-chip')].map(c =>
+                elementData[parseInt(c.dataset.index)]);
+            elementData = reordered;
+            renderElements();
+            updatePreview();
+        }
+    });
+}
+
+// Init popovers (element palette help)
+document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el =>
+    new bootstrap.Popover(el));
+</script>
+}
+
+@functions {
+    string GetElementLabel(IdElementType et) => et switch
+    {
+        IdElementType.FixedText    => "Fixed Text",
+        IdElementType.Random20Bit  => "Random 20-bit",
+        IdElementType.Random32Bit  => "Random 32-bit",
+        IdElementType.Random6Digit => "Random 6-digit",
+        IdElementType.Random9Digit => "Random 9-digit",
+        IdElementType.Guid         => "GUID",
+        IdElementType.DateTime     => "Date/Time",
+        IdElementType.Sequence     => "Sequence",
+        _                          => et.ToString()
+    };
+    string GetElementHelp(IdElementType et) => et switch
+    {
+        IdElementType.FixedText    => "A fixed string (any Unicode text) you define.",
+        IdElementType.Random20Bit  => "A random number 0–1 048 575.",
+        IdElementType.Random32Bit  => "A random 32-bit number.",
+        IdElementType.Random6Digit => "A 6-digit random number (000000–999999).",
+        IdElementType.Random9Digit => "A 9-digit random number.",
+        IdElementType.Guid         => "A globally unique identifier (GUID).",
+        IdElementType.DateTime     => "Date/time at moment of item creation.",
+        IdElementType.Sequence     => "Auto-incrementing counter per inventory.",
+        _                          => ""
+    };
+}

@@ -1,9 +1,102 @@
 ﻿@page
-@model IndexModel
+@model InventoryApp.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "InvenTrack — Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<div class="row g-4">
+
+    <!-- Latest Inventories -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Latest Inventories</h5>
+            <a asp-page="/Inventories/Index" class="btn btn-outline-primary btn-sm">View all</a>
+        </div>
+        @if (!Model.Latest.Any())
+        {
+            <p class="text-muted">No inventories yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Owner</th>
+                            <th class="text-center">Items</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var inv in Model.Latest)
+                        {
+                            <tr class="cursor-pointer"
+                                onclick="location.href='@Url.Page("/Inventories/Detail", new { id = inv.Id })'">
+                                <td>
+                                    <div class="fw-semibold">@inv.Title</div>
+                                    @if (!string.IsNullOrWhiteSpace(inv.Description))
+                                    {
+                                        <div class="text-muted small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px">
+                                            @inv.Description
+                                        </div>
+                                    }
+                                </td>
+                                <td class="text-muted small">@inv.OwnerName</td>
+                                <td class="text-center"><span class="badge bg-secondary">@inv.ItemCount</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- Top 5 Popular -->
+    <div class="col-md-6">
+        <h5 class="mb-2"><i class="bi bi-fire me-2 text-danger"></i>Most Popular</h5>
+        @if (!Model.Popular.Any())
+        {
+            <p class="text-muted small">—</p>
+        }
+        else
+        {
+            <ol class="list-group list-group-numbered">
+                @foreach (var inv in Model.Popular)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a asp-page="/Inventories/Detail" asp-route-id="@inv.Id"
+                           class="text-decoration-none fw-semibold">@inv.Title</a>
+                        <span class="badge bg-primary rounded-pill">@inv.ItemCount items</span>
+                    </li>
+                }
+            </ol>
+        }
+    </div>
+
+    <!-- Tag Cloud -->
+    <div class="col-md-6">
+        <h5 class="mb-2"><i class="bi bi-tags me-2 text-success"></i>Tag Cloud</h5>
+        @if (!Model.TagCloud.Any())
+        {
+            <p class="text-muted small">No tags yet.</p>
+        }
+        else
+        {
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var tag in Model.TagCloud)
+                {
+                    var size = tag.Count switch { >= 10 => "fs-5", >= 5 => "fs-6", _ => "small" };
+                    <a asp-page="/Inventories/Index" asp-route-tag="@tag.Name"
+                       class="badge bg-success bg-opacity-75 text-decoration-none @size p-2">
+                        @tag.Name <sup>@tag.Count</sup>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
 </div>
+
+@section Scripts {
+    <style>.cursor-pointer { cursor: pointer; }</style>
+}

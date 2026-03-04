@@ -15,6 +15,19 @@
           }
         }
       },
+      "Markdig/1.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authentication.Facebook/8.0.4": {
         "type": "package",
         "compile": {
@@ -997,6 +1010,29 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "Markdig/1.1.0": {
+      "sha512": "ivaowI69dGxiyaKLy6+qo9Xm4DHwXDKB3orGIFOvA8k+eUBAV5UaW8GPIMc3h5jl7gZalyecR3x2t+nuLYdmFg==",
+      "type": "package",
+      "path": "markdig/1.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net10.0/Markdig.dll",
+        "lib/net10.0/Markdig.xml",
+        "lib/net462/Markdig.dll",
+        "lib/net462/Markdig.xml",
+        "lib/net8.0/Markdig.dll",
+        "lib/net8.0/Markdig.xml",
+        "lib/netstandard2.0/Markdig.dll",
+        "lib/netstandard2.0/Markdig.xml",
+        "lib/netstandard2.1/Markdig.dll",
+        "lib/netstandard2.1/Markdig.xml",
+        "markdig.1.1.0.nupkg.sha512",
+        "markdig.nuspec",
+        "markdig.png",
+        "readme.md"
       ]
     },
     "Microsoft.AspNetCore.Authentication.Facebook/8.0.4": {
@@ -2492,6 +2528,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Markdig >= 1.1.0",
       "Microsoft.AspNetCore.Authentication.Facebook >= 8.0.4",
       "Microsoft.AspNetCore.Authentication.Google >= 8.0.4",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.4",
@@ -2542,6 +2579,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "Markdig": {
+            "target": "Package",
+            "version": "[1.1.0, )"
+          },
           "Microsoft.AspNetCore.Authentication.Facebook": {
             "target": "Package",
             "version": "[8.0.4, )"

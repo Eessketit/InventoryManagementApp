@@ -1,0 +1,78 @@
+@page
+@model InventoryApp.Pages.Inventories.IndexModel
+@{
+    ViewData["Title"] = Model.FilterTag != null ? $"Tag: {Model.FilterTag}"
+                      : Model.SearchQuery != null ? $"Search: {Model.SearchQuery}"
+                      : "All Inventories";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <h3 class="mb-0">
+        @if (Model.FilterTag != null)
+        {
+            <i class="bi bi-tag-fill me-2 text-primary"></i><span>Tag: <em>@Model.FilterTag</em></span>
+        }
+        else if (Model.SearchQuery != null)
+        {
+            <i class="bi bi-search me-2"></i><span>Results for "<em>@Model.SearchQuery</em>"</span>
+        }
+        else
+        {
+            <i class="bi bi-boxes me-2"></i><span>All Inventories</span>
+        }
+    </h3>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a asp-page="/Inventories/Create" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>New Inventory
+        </a>
+    }
+</div>
+
+@if (!Model.Inventories.Any())
+{
+    <div class="alert alert-info">No inventories found.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" id="inventoriesTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Owner</th>
+                    <th>Items</th>
+                    <th>Tags</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var inv in Model.Inventories)
+                {
+                    <tr class="cursor-pointer" onclick="location.href='@Url.Page("/Inventories/Detail", new { id = inv.Id })'">
+                        <td class="fw-semibold">@inv.Title</td>
+                        <td class="text-muted small" style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            @inv.Description
+                        </td>
+                        <td class="text-muted small">@inv.OwnerName</td>
+                        <td><span class="badge bg-secondary">@inv.ItemCount</span></td>
+                        <td>
+                            @foreach (var tag in inv.Tags)
+                            {
+                                <a href="?tag=@Uri.EscapeDataString(tag)"
+                                   class="badge bg-primary text-decoration-none me-1"
+                                   onclick="event.stopPropagation()">@tag</a>
+                            }
+                        </td>
+                        <td class="text-muted small">@inv.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <style>.cursor-pointer { cursor: pointer; }</style>
+}

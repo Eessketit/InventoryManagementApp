@@ -48,6 +48,11 @@
                     </form>
 
                     <ul class="navbar-nav ms-auto align-items-center gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Inventories/Index">
+                                <i class="bi bi-boxes me-1"></i>Inventories
+                            </a>
+                        </li>
 
                         @if (User.Identity?.IsAuthenticated == true)
                         {

@@ -1,10 +1,11 @@
 @page
 @model InventoryApp.Pages.Users.IndexModel
 @{
-    ViewData["Title"] = "My Profile";
+    ViewData["Title"] = "Profile — " + Model.ProfileUser?.Name;
     var u = Model.ProfileUser;
-    var isAdmin = u?.IsAdmin == true;
+    var isAdmin   = u?.IsAdmin == true;
     var isBlocked = u?.LockoutEnd.HasValue == true && u.LockoutEnd > DateTimeOffset.UtcNow;
+    var isMe = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == u?.Id.ToString();
 }
 
 <!-- Profile header -->
@@ -19,53 +20,52 @@
         <div class="d-flex gap-2 flex-wrap">
             @if (isAdmin)
             {
-                <span class="badge bg-warning text-dark">
-                    <i class="bi bi-shield-fill me-1"></i>Admin
-                </span>
+                <span class="badge bg-warning text-dark"><i class="bi bi-shield-fill me-1"></i>Admin</span>
             }
             else
             {
-                <span class="badge bg-primary">
-                    <i class="bi bi-person-fill me-1"></i>Member
-                </span>
+                <span class="badge bg-primary"><i class="bi bi-person-fill me-1"></i>Member</span>
             }
-
             @if (isBlocked)
             {
-                <span class="badge bg-danger">
-                    <i class="bi bi-lock-fill me-1"></i>Blocked
-                </span>
+                <span class="badge bg-danger"><i class="bi bi-lock-fill me-1"></i>Blocked</span>
             }
             else
             {
-                <span class="badge bg-success">
-                    <i class="bi bi-check-circle-fill me-1"></i>Active
-                </span>
+                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Active</span>
             }
         </div>
     </div>
 </div>
 
 <!-- Stats row -->
-<div class="row g-3 mb-5">
-    <div class="col-sm-6 col-md-4">
-        <div class="card h-100">
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-md-3">
+        <div class="card h-100 text-center">
             <div class="card-body">
                 <div class="text-muted small mb-1">Member since</div>
                 <div class="fw-semibold">@u?.RegisteredAt.ToString("MMMM d, yyyy")</div>
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-md-4">
-        <div class="card h-100">
+    <div class="col-sm-6 col-md-3">
+        <div class="card h-100 text-center">
             <div class="card-body">
                 <div class="text-muted small mb-1">Last login</div>
-                <div class="fw-semibold">@(u?.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never")</div>
+                <div class="fw-semibold">@(u?.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</div>
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-md-4">
-        <div class="card h-100">
+    <div class="col-sm-6 col-md-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Inventories owned</div>
+                <div class="fw-semibold fs-4">@Model.OwnedInvs.Count</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card h-100 text-center">
             <div class="card-body">
                 <div class="text-muted small mb-1">Theme / Language</div>
                 <div class="fw-semibold">
@@ -78,8 +78,87 @@
     </div>
 </div>
 
-<!-- Phase 3: Inventory tables will go here -->
-<div class="alert alert-info d-flex align-items-center gap-2" role="alert">
-    <i class="bi bi-info-circle-fill fs-5"></i>
-    <span>Your inventory tables will appear here in the next phase of development.</span>
+<!-- Owned inventories table -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0"><i class="bi bi-boxes me-2 text-primary"></i>My Inventories</h5>
+        @if (isMe)
+        {
+            <a asp-page="/Inventories/Create" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>New
+            </a>
+        }
+    </div>
+
+    @if (!Model.OwnedInvs.Any())
+    {
+        <p class="text-muted small">No inventories yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th class="text-center">Items</th>
+                        <th>Last updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var inv in Model.OwnedInvs)
+                    {
+                        <tr class="cursor-pointer"
+                            onclick="location.href='@Url.Page("/Inventories/Detail", new { id = inv.Id })'">
+                            <td class="fw-semibold">@inv.Title</td>
+                            <td class="text-muted small">@(inv.Category ?? "—")</td>
+                            <td class="text-center"><span class="badge bg-secondary">@inv.ItemCount</span></td>
+                            <td class="text-muted small">@inv.UpdatedAt.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
+
+<!-- Write-access inventories table -->
+<div>
+    <h5 class="mb-2"><i class="bi bi-pencil-square me-2 text-success"></i>Inventories with Write Access</h5>
+    @if (!Model.AccessInvs.Any())
+    {
+        <p class="text-muted small">No write-access grants yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th class="text-center">Items</th>
+                        <th>Last updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var inv in Model.AccessInvs)
+                    {
+                        <tr class="cursor-pointer"
+                            onclick="location.href='@Url.Page("/Inventories/Detail", new { id = inv.Id })'">
+                            <td class="fw-semibold">@inv.Title</td>
+                            <td class="text-muted small">@(inv.Category ?? "—")</td>
+                            <td class="text-center"><span class="badge bg-secondary">@inv.ItemCount</span></td>
+                            <td class="text-muted small">@inv.UpdatedAt.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <style>.cursor-pointer { cursor: pointer; }</style>
+}

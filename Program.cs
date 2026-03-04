@@ -105,6 +105,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireClaim("IsAdmin", "true")));
 
+builder.Services.AddSingleton<InventoryApp.Services.MarkdownService>();
+
 builder.Services.AddRazorPages();
 
 // ── BUILD ─────────────────────────────────────────────────────────────────────
