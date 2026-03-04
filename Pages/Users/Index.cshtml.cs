@@ -29,21 +29,27 @@ public class IndexModel : PageModel
         if (ProfileUser == null) return NotFound();
 
         // Inventories owned by this user
-        OwnedInvs = await _db.Inventories
+        var ownedQuery = await _db.Inventories
             .Where(i => i.OwnerId == targetId)
             .AsNoTracking()
             .OrderByDescending(i => i.UpdatedAt)
-            .Select(i => new InventoryRow(i.Id, i.Title, i.Category, i.Items.Count(), i.UpdatedAt))
+            .Select(i => new { i.Id, i.Title, i.Category, ItemCount = i.Items.Count(), i.UpdatedAt })
             .ToListAsync();
 
+        OwnedInvs = ownedQuery
+            .Select(i => new InventoryRow(i.Id, i.Title, i.Category, i.ItemCount, i.UpdatedAt))
+            .ToList();
+
         // Inventories where this user has explicit write access
-        AccessInvs = await _db.InventoryAccess
+        var accessQuery = await _db.InventoryAccess
             .Where(a => a.UserId == targetId)
-            .Select(a => new InventoryRow(
-                a.InventoryId, a.Inventory.Title, a.Inventory.Category,
-                a.Inventory.Items.Count(), a.Inventory.UpdatedAt))
+            .Select(a => new { a.InventoryId, a.Inventory.Title, a.Inventory.Category, ItemCount = a.Inventory.Items.Count(), a.Inventory.UpdatedAt })
             .AsNoTracking()
             .ToListAsync();
+
+        AccessInvs = accessQuery
+            .Select(a => new InventoryRow(a.InventoryId, a.Title, a.Category, a.ItemCount, a.UpdatedAt))
+            .ToList();
 
         return Page();
     }

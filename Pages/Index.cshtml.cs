@@ -20,32 +20,42 @@ public class IndexModel : PageModel
     public async Task OnGetAsync()
     {
         // Latest 10 inventories — single query
-        Latest = await _db.Inventories
+        var latestQuery = await _db.Inventories
             .Include(i => i.Owner)
             .AsNoTracking()
             .OrderByDescending(i => i.CreatedAt)
             .Take(10)
-            .Select(i => new InventoryRow(i.Id, i.Title, i.Description, i.ImageUrl,
-                i.Owner.Name, i.Items.Count()))
+            .Select(i => new { i.Id, i.Title, i.Description, i.ImageUrl, OwnerName = i.Owner.Name, ItemCount = i.Items.Count() })
             .ToListAsync();
 
+        Latest = latestQuery
+            .Select(i => new InventoryRow(i.Id, i.Title, i.Description, i.ImageUrl, i.OwnerName, i.ItemCount))
+            .ToList();
+
         // Top 5 by item count — single query
-        Popular = await _db.Inventories
+        var popularQuery = await _db.Inventories
             .Include(i => i.Owner)
             .AsNoTracking()
             .OrderByDescending(i => i.Items.Count())
             .Take(5)
-            .Select(i => new InventoryRow(i.Id, i.Title, i.Description, i.ImageUrl,
-                i.Owner.Name, i.Items.Count()))
+            .Select(i => new { i.Id, i.Title, i.Description, i.ImageUrl, OwnerName = i.Owner.Name, ItemCount = i.Items.Count() })
             .ToListAsync();
 
+        Popular = popularQuery
+            .Select(i => new InventoryRow(i.Id, i.Title, i.Description, i.ImageUrl, i.OwnerName, i.ItemCount))
+            .ToList();
+
         // Tag cloud — count of inventories per tag
-        TagCloud = await _db.Tags
+        var tagData = await _db.Tags
             .AsNoTracking()
             .Where(t => t.InventoryTags.Any())
-            .Select(t => new TagCount(t.Name, t.InventoryTags.Count))
-            .OrderByDescending(tc => tc.Count)
+            .Select(t => new { t.Name, Count = t.InventoryTags.Count })
+            .OrderByDescending(x => x.Count)
             .Take(40)
             .ToListAsync();
+
+        TagCloud = tagData
+            .Select(x => new TagCount(x.Name, x.Count))
+            .ToList();
     }
 }
