@@ -20,9 +20,9 @@ string connectionString;
 
 if (!string.IsNullOrWhiteSpace(databaseUrl))
 {
-    var uri      = new Uri(databaseUrl);
+    var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':', 2);
-    var dbPort   = uri.Port > 0 ? uri.Port : 5432;
+    var dbPort = uri.Port > 0 ? uri.Port : 5432;
 
     connectionString =
         $"Host={uri.Host};" +
@@ -45,14 +45,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services
     .AddIdentity<AppUser, IdentityRole<Guid>>(options =>
     {
-        options.Password.RequireDigit            = false;
-        options.Password.RequiredLength          = 6;
-        options.Password.RequireNonAlphanumeric  = false;
-        options.Password.RequireUppercase        = false;
-        options.SignIn.RequireConfirmedEmail      = false;
-        options.Lockout.DefaultLockoutTimeSpan   = TimeSpan.FromMinutes(15);
-        options.Lockout.MaxFailedAccessAttempts  = 5;
-        options.Lockout.AllowedForNewUsers       = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.SignIn.RequireConfirmedEmail = false;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.AllowedForNewUsers = true;
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
@@ -66,28 +66,28 @@ builder.Services
 // ── COOKIE SETTINGS ───────────────────────────────────────────────────────────
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath          = "/Auth/Login";
-    options.AccessDeniedPath   = "/Auth/Login";
-    options.Cookie.HttpOnly    = true;
-    options.SlidingExpiration  = true;
+    options.LoginPath = "/Auth/Login";
+    options.AccessDeniedPath = "/Auth/Login";
+    options.Cookie.HttpOnly = true;
+    options.SlidingExpiration = true;
     // Fix for "Remember Me": when isPersistent=false the cookie is session-only.
     // When isPersistent=true (Remember Me checked) it lives for 30 days.
-    options.ExpireTimeSpan     = TimeSpan.FromDays(30);
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 
 // ── OAUTH ─────────────────────────────────────────────────────────────────────
-var googleClientId     = builder.Configuration["Authentication:Google:ClientId"];
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
 var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-var fbAppId            = builder.Configuration["Authentication:Facebook:AppId"];
-var fbAppSecret        = builder.Configuration["Authentication:Facebook:AppSecret"];
+var fbAppId = builder.Configuration["Authentication:Facebook:AppId"];
+var fbAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
 
 var authBuilder = builder.Services.AddAuthentication();
 
 if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(googleClientSecret))
     authBuilder.AddGoogle(options =>
     {
-        options.ClientId     = googleClientId;
+        options.ClientId = googleClientId;
         options.ClientSecret = googleClientSecret;
         options.Scope.Add("profile");
     });
@@ -95,7 +95,7 @@ if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(goo
 if (!string.IsNullOrWhiteSpace(fbAppId) && !string.IsNullOrWhiteSpace(fbAppSecret))
     authBuilder.AddFacebook(options =>
     {
-        options.AppId     = fbAppId;
+        options.AppId = fbAppId;
         options.AppSecret = fbAppSecret;
         options.Fields.Add("name");
     });
@@ -113,14 +113,14 @@ var app = builder.Build();
 // ── MIGRATIONS + ADMIN SEED ───────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
-    var db          = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
 
     db.Database.Migrate();
 
     // If no admin exists in the DB, promote the first user OR create a seed admin.
     // Credentials come from config / environment so they're never hard-coded.
-    var seedEmail    = builder.Configuration["Seed:AdminEmail"];
+    var seedEmail = builder.Configuration["Seed:AdminEmail"];
     var seedPassword = builder.Configuration["Seed:AdminPassword"];
 
     if (!string.IsNullOrWhiteSpace(seedEmail) && !string.IsNullOrWhiteSpace(seedPassword))
@@ -133,15 +133,19 @@ using (var scope = app.Services.CreateScope())
             {
                 var admin = new AppUser
                 {
-                    Id            = Guid.NewGuid(),
-                    UserName      = seedEmail,
-                    Email         = seedEmail,
-                    Name          = "Admin",
-                    IsAdmin       = true,
-                    RegisteredAt  = DateTime.UtcNow,
+                    Id = Guid.NewGuid(),
+                    UserName = seedEmail,
+                    Email = seedEmail,
+                    Name = "Admin",
+                    IsAdmin = true,
+                    RegisteredAt = DateTime.UtcNow,
                     EmailConfirmed = true,
                 };
-                await userManager.CreateAsync(admin, seedPassword);
+                var result = await userManager.CreateAsync(admin, seedPassword);
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to seed admin: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
             }
             else if (!existing.IsAdmin)
             {
