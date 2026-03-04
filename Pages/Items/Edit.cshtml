@@ -1,0 +1,114 @@
+@page
+@using InventoryApp.Models
+@model InventoryApp.Pages.Items.EditModel
+@{
+    ViewData["Title"] = Model.IsEditing ? "Edit Item" : "New Item";
+}
+
+<div class="row align-items-center mb-3">
+    <div class="col">
+        <h2 class="mb-0">
+            <a asp-page="/Inventories/Detail" asp-route-id="@Model.Input.InventoryId" class="text-decoration-none text-muted">@Model.Inventory.Title</a> 
+            <i class="bi bi-chevron-right mx-1 small"></i>
+            @(Model.IsEditing ? "Edit Item" : "New Item")
+        </h2>
+    </div>
+</div>
+
+<div class="card shadow-sm mx-auto" style="max-width: 800px;">
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" asp-for="Input.Id" />
+            <input type="hidden" asp-for="Input.InventoryId" />
+
+            <div class="mb-4">
+                <label asp-for="Input.CustomId" class="form-label fw-bold">Custom ID</label>
+                <input asp-for="Input.CustomId" class="form-control font-monospace" placeholder="@(Model.IsEditing ? "" : $"Auto-generated e.g. {Model.CustomIdPreview}")" />
+                <div class="form-text">Leave blank to auto-generate based on inventory settings.</div>
+                <span asp-validation-for="Input.CustomId" class="text-danger small"></span>
+            </div>
+
+            @foreach (var field in Model.ActiveFields)
+            {
+                var inputName = $"Input.{field.Type}{field.Slot}";
+                <div class="mb-4">
+                    <label for="@inputName" class="form-label fw-bold">
+                        @field.Title
+                        @if (!string.IsNullOrEmpty(field.Description))
+                        {
+                            <i class="bi bi-info-circle ms-1 text-muted" title="@field.Description" data-bs-toggle="tooltip"></i>
+                        }
+                    </label>
+
+                    @if (field.Type == FieldType.Text)
+                    {
+                        <input type="text" id="@inputName" name="@inputName" class="form-control" value="@GetProperty(Model.Input, field)" />
+                    }
+                    else if (field.Type == FieldType.MultiText)
+                    {
+                        <textarea id="@inputName" name="@inputName" class="form-control" rows="3">@GetProperty(Model.Input, field)</textarea>
+                    }
+                    else if (field.Type == FieldType.Number)
+                    {
+                        <input type="number" step="any" id="@inputName" name="@inputName" class="form-control" value="@GetProperty(Model.Input, field)" />
+                    }
+                    else if (field.Type == FieldType.Link)
+                    {
+                        <input type="url" id="@inputName" name="@inputName" class="form-control" value="@GetProperty(Model.Input, field)" />
+                    }
+                    else if (field.Type == FieldType.Bool)
+                    {
+                        <div class="form-check form-switch pt-1">
+                            <input type="checkbox" id="@inputName" name="@inputName" class="form-check-input" value="true" @(GetBoolProperty(Model.Input, field) ? "checked" : "") />
+                            <input type="hidden" name="@inputName" value="false" />
+                        </div>
+                    }
+                </div>
+            }
+
+            <hr class="my-4" />
+            
+            <div class="d-flex justify-content-between">
+                <a asp-page="/Inventories/Detail" asp-route-id="@Model.Input.InventoryId" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back
+                </a>
+                
+                <div>
+                    @if (Model.IsEditing)
+                    {
+                        <button type="submit" asp-page-handler="Delete" asp-route-inventoryId="@Model.Input.InventoryId" asp-route-id="@Model.Input.Id" class="btn btn-outline-danger me-2" onclick="return confirm('Are you sure you want to delete this item?');">
+                            <i class="bi bi-trash me-1"></i>Delete
+                        </button>
+                    }
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2 me-1"></i>Save Item
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@functions {
+    string? GetProperty(object obj, InventoryField field)
+    {
+        var propInfo = obj.GetType().GetProperty($"{field.Type}{field.Slot}");
+        return propInfo?.GetValue(obj)?.ToString();
+    }
+    
+    bool GetBoolProperty(object obj, InventoryField field)
+    {
+        var propInfo = obj.GetType().GetProperty($"{field.Type}{field.Slot}");
+        var val = propInfo?.GetValue(obj);
+        return val != null && (bool)val;
+    }
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ttElts = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            [...ttElts].map(e => new bootstrap.Tooltip(e));
+        });
+    </script>
+}

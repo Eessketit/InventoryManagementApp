@@ -62,8 +62,12 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .OnDelete(DeleteBehavior.Restrict);
 
             // Full-text search index on title + description
-            e.HasIndex(i => new { i.Title, i.Description })
-             .HasDatabaseName("IX_inventories_fts");
+            e.HasGeneratedTsVectorColumn(
+                i => i.SearchVector,
+                "english",
+                i => new { i.Title, i.Description })
+             .HasIndex(i => i.SearchVector)
+             .HasMethod("GIN");
         });
 
         // ── Tag ───────────────────────────────────────────────────────────────

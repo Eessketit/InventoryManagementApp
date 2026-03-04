@@ -34,4 +34,7 @@ public class Inventory
     public ICollection<Item>            Items            { get; set; } = [];
     public ICollection<CustomIdElement> IdElements       { get; set; } = [];
     public ICollection<Comment>         Comments         { get; set; } = [];
+
+    // ── Search ────────────────────────────────────────────────────────────────
+    public NpgsqlTypes.NpgsqlTsVector SearchVector { get; set; } = null!;
 }

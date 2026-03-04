@@ -33,8 +33,7 @@ public class IndexModel : PageModel
             query = query.Where(i => i.InventoryTags.Any(it => it.Tag.Name == tag));
 
         if (!string.IsNullOrWhiteSpace(q))
-            query = query.Where(i =>
-                i.Title.Contains(q) || i.Description.Contains(q));
+            query = query.Where(i => i.SearchVector.Matches(EF.Functions.WebSearchToTsQuery("english", q)));
 
         var raw = await query
             .OrderByDescending(i => i.CreatedAt)

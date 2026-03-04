@@ -143,7 +143,7 @@
                         @foreach (var item in Model.Items)
                         {
                             <tr class="cursor-pointer"
-                                onclick="location.href='@Url.Page("/Items/Edit", new { id = item.Id })'">
+                                onclick="location.href='@Url.Page("/Items/Edit", new { inventoryId = inv.Id, id = item.Id })'">
                                 <td class="fw-semibold font-monospace">@item.CustomId</td>
                                 <td class="text-muted small">@item.CreatedByName</td>
                                 <td class="text-muted small">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
@@ -151,7 +151,23 @@
                                 {
                                     <td class="small">@item.Values[vi]</td>
                                 }
-                                <td class="small">@item.LikeCount</td>
+                                <td class="small" onclick="event.stopPropagation()">
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        var isLiked = Model.LikedIds.Contains(item.Id);
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 like-btn"
+                                                data-item-id="@item.Id"
+                                                data-liked="@(isLiked ? "true" : "false")">
+                                            <i class="bi @(isLiked ? "bi-heart-fill text-danger" : "bi-heart text-muted")"></i>
+                                            <span class="like-count text-muted">@item.LikeCount</span>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-heart text-muted"></i>
+                                        <span class="text-muted ms-1">@item.LikeCount</span>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -828,6 +844,33 @@ if (elementList) {
 // Init popovers (element palette help)
 document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el =>
     new bootstrap.Popover(el));
+
+// Item Likes
+document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+        const itemId = btn.dataset.itemId;
+        try {
+            const res = await fetch(`?handler=ToggleLike&itemId=${itemId}`, {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': getToken() }
+            });
+            const data = await res.json();
+            if (data.success) {
+                btn.dataset.liked = data.liked ? "true" : "false";
+                const icon = btn.querySelector('i');
+                const count = btn.querySelector('.like-count');
+                if (data.liked) {
+                    icon.classList.remove('bi-heart', 'text-muted');
+                    icon.classList.add('bi-heart-fill', 'text-danger');
+                } else {
+                    icon.classList.remove('bi-heart-fill', 'text-danger');
+                    icon.classList.add('bi-heart', 'text-muted');
+                }
+                count.textContent = data.newCount;
+            }
+        } catch (err) { console.error('Error toggling like', err); }
+    });
+});
 </script>
 }
 

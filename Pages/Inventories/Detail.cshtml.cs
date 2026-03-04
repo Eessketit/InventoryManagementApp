@@ -287,6 +287,36 @@ public class DetailModel : PageModel
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // POST: Toggle Like (AJAX, returns JSON)
+    // ─────────────────────────────────────────────────────────────────────────
+    public async Task<IActionResult> OnPostToggleLikeAsync(Guid id, Guid itemId)
+    {
+        if (!User.Identity!.IsAuthenticated)
+            return new JsonResult(new { success = false, message = "Not authenticated" });
+
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        
+        var existing = await _db.Likes.FirstOrDefaultAsync(l => l.ItemId == itemId && l.UserId == userId);
+        bool liked;
+
+        if (existing != null)
+        {
+            _db.Likes.Remove(existing);
+            liked = false;
+        }
+        else
+        {
+            _db.Likes.Add(new Like { ItemId = itemId, UserId = userId });
+            liked = true;
+        }
+
+        await _db.SaveChangesAsync();
+
+        var newCount = await _db.Likes.CountAsync(l => l.ItemId == itemId);
+        return new JsonResult(new { success = true, liked, newCount });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // Preview custom ID (AJAX, returns JSON)
     // ─────────────────────────────────────────────────────────────────────────
     public IActionResult OnPostPreviewCustomId(List<IdElementInput> elements)
