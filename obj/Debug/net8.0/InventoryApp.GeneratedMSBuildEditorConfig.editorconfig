@@ -18,12 +18,12 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = D:\Itransition\InventoryManagementApp
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Itransition/InventoryManagementApp/Api/Preferences.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXBpXFByZWZlcmVuY2VzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/Itransition/InventoryManagementApp/Pages/Admin/Users.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cVXNlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Itransition/InventoryManagementApp/Pages/Api/Preferences.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXBpXFByZWZlcmVuY2VzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Itransition/InventoryManagementApp/Pages/Api/Tags.cshtml]
