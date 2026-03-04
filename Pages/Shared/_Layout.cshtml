@@ -53,6 +53,21 @@
                                 <i class="bi bi-boxes me-1"></i>Inventories
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <!-- Theme toggle -->
+                            @{
+                                var currentTheme = User.FindFirst("Theme")?.Value ?? "light";
+                            }
+                            <button type="button" id="themeToggleBtn"
+                                    class="btn btn-sm btn-outline-secondary border-0 mt-1"
+                                    title="Toggle theme" aria-label="Toggle dark/light theme">
+                                <i id="themeToggleIcon" class="bi @(currentTheme == "dark" ? "bi-sun" : "bi-moon")"></i>
+                            </button>
+                            <!-- Form needed just to generate the AntiForgery token for our JS -->
+                            <form id="themeForm" method="post" asp-page="/Api/Preferences" asp-page-handler="Theme" style="display:none;">
+                                <input type="hidden" name="theme" id="themeInput" value="" />
+                            </form>
+                        </li>
 
                         @if (User.Identity?.IsAuthenticated == true)
                         {
@@ -70,22 +85,6 @@
                                     <i class="bi bi-person-circle me-1"></i>
                                     @(User.FindFirst("DisplayName")?.Value ?? User.Identity.Name)
                                 </a>
-                            </li>
-
-                            <!-- Theme toggle -->
-                            <li class="nav-item">
-                                @{
-                                    var currentTheme = User.FindFirst("Theme")?.Value ?? "light";
-                                }
-                                <button type="button" id="themeToggleBtn"
-                                        class="btn btn-sm btn-outline-secondary border-0 mt-1"
-                                        title="Toggle theme" aria-label="Toggle dark/light theme">
-                                    <i id="themeToggleIcon" class="bi @(currentTheme == "dark" ? "bi-sun" : "bi-moon")"></i>
-                                </button>
-                                <!-- Form needed just to generate the AntiForgery token for our JS -->
-                                <form id="themeForm" method="post" asp-page="/Api/Preferences" asp-page-handler="Theme" style="display:none;">
-                                    <input type="hidden" name="theme" id="themeInput" value="" />
-                                </form>
                             </li>
 
                             <li class="nav-item">

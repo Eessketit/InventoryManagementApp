@@ -12,7 +12,7 @@ namespace InventoryApp.Pages.Api;
 /// auth cookie via AppUserClaimsPrincipalFactory so the new Theme/Lang
 /// claim is immediately visible on the next page load.
 /// </summary>
-[Authorize]
+[AllowAnonymous]
 public class PreferencesModel : PageModel
 {
     private readonly UserManager<AppUser> _userManager;
