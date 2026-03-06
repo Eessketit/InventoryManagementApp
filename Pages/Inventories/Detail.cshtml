@@ -602,17 +602,21 @@
 </style>
 <script>
 // ── Tags (Tagify) ─────────────────────────────────────────────────────────────
-var tagify = new Tagify(document.getElementById('tagsInput'), {
-    delimiters: ',',
-    dropdown: {
-        enabled: 0,
-        searchKeys: ['value']
-    },
-    whitelist: [],
-    callbacks: {
-        input: onTagInput
-    }
-});
+const tagsInputEl = document.getElementById('tagsInput');
+var tagify;
+if (tagsInputEl) {
+    tagify = new Tagify(tagsInputEl, {
+        delimiters: ',',
+        dropdown: {
+            enabled: 0,
+            searchKeys: ['value']
+        },
+        whitelist: [],
+        callbacks: {
+            input: onTagInput
+        }
+    });
+}
 
 async function onTagInput(e) {
     const prefix = e.detail.value;
@@ -656,8 +660,11 @@ if (settingsForm) {
         if (statusEl) statusEl.textContent = 'Saving…';
 
         // Sync Tagify value back to hidden input
-        const tagValues = tagify.value.map(t => t.value).join(',');
-        settingsForm.querySelector('[name="settings.Tags"]').value = tagValues;
+        if (tagify) {
+            const tagValues = tagify.value.map(t => t.value).join(',');
+            const tagsHidden = settingsForm.querySelector('[name="settings.Tags"]');
+            if (tagsHidden) tagsHidden.value = tagValues;
+        }
 
         const fd = new FormData(settingsForm);
         // Handle checkbox: if not checked it won't be in FormData

@@ -139,10 +139,14 @@ public class DetailModel : PageModel
             return RedirectToPage(new { id, tab = "fields" });
         }
 
-        int maxOrder = await _db.InventoryFields
-            .Where(f => f.InventoryId == id)
-            .Select(f => (int?)f.DisplayOrder)
-            .MaxAsync() ?? 0;
+        var maxOrderQuery = _db.InventoryFields
+            .Where(f => f.InventoryId == id);
+            
+        int maxOrder = 0;
+        if (await maxOrderQuery.AnyAsync())
+        {
+            maxOrder = await maxOrderQuery.MaxAsync(f => f.DisplayOrder);
+        }
 
         _db.InventoryFields.Add(new InventoryField
         {
@@ -237,6 +241,8 @@ public class DetailModel : PageModel
 
         var existing = await _db.CustomIdElements.Where(e => e.InventoryId == id).ToListAsync();
         _db.CustomIdElements.RemoveRange(existing);
+
+        if (elements == null) return RedirectToPage(new { id, tab = "customid" });
 
         for (int i = 0; i < elements.Count && i < 10; i++)
         {
