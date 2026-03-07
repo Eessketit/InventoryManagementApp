@@ -98,6 +98,7 @@ if (!string.IsNullOrWhiteSpace(githubClientId) && !string.IsNullOrWhiteSpace(git
     {
         options.ClientId = githubClientId;
         options.ClientSecret = githubClientSecret;
+        options.Scope.Add("user:email");
     });
 
 // ── AUTHORIZATION ─────────────────────────────────────────────────────────────
