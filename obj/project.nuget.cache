@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "7Hve2iRHdME=",
+  "dgSpecHash": "F3Kj1ysXrGk=",
   "success": true,
   "projectFilePath": "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Shohruz\\.nuget\\packages\\aspnet.security.oauth.github\\8.0.0\\aspnet.security.oauth.github.8.0.0.nupkg.sha512",
     "C:\\Users\\Shohruz\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Shohruz\\.nuget\\packages\\markdig\\1.1.0\\markdig.1.1.0.nupkg.sha512",
-    "C:\\Users\\Shohruz\\.nuget\\packages\\microsoft.aspnetcore.authentication.facebook\\8.0.4\\microsoft.aspnetcore.authentication.facebook.8.0.4.nupkg.sha512",
     "C:\\Users\\Shohruz\\.nuget\\packages\\microsoft.aspnetcore.authentication.google\\8.0.4\\microsoft.aspnetcore.authentication.google.8.0.4.nupkg.sha512",
     "C:\\Users\\Shohruz\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.4\\microsoft.aspnetcore.cryptography.internal.8.0.4.nupkg.sha512",
     "C:\\Users\\Shohruz\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\8.0.4\\microsoft.aspnetcore.cryptography.keyderivation.8.0.4.nupkg.sha512",

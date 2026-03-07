@@ -79,8 +79,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 // ── OAUTH ─────────────────────────────────────────────────────────────────────
 var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
 var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-var fbAppId = builder.Configuration["Authentication:Facebook:AppId"];
-var fbAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+var githubClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+var githubClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
 
 var authBuilder = builder.Services.AddAuthentication();
 
@@ -92,12 +92,11 @@ if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(goo
         options.Scope.Add("profile");
     });
 
-if (!string.IsNullOrWhiteSpace(fbAppId) && !string.IsNullOrWhiteSpace(fbAppSecret))
-    authBuilder.AddFacebook(options =>
+if (!string.IsNullOrWhiteSpace(githubClientId) && !string.IsNullOrWhiteSpace(githubClientSecret))
+    authBuilder.AddGitHub(options =>
     {
-        options.AppId = fbAppId;
-        options.AppSecret = fbAppSecret;
-        options.Fields.Add("name");
+        options.ClientId = githubClientId;
+        options.ClientSecret = githubClientSecret;
     });
 
 // ── AUTHORIZATION ─────────────────────────────────────────────────────────────
