@@ -4,6 +4,7 @@ using InventoryApp.Data;
 using InventoryApp.Infrastructure;
 using InventoryApp.Middleware;
 using InventoryApp.Models;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -156,6 +157,11 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
