@@ -73,4 +73,55 @@
   <data name="Title" xml:space="preserve"><value>Название</value></data>
   <data name="Owner" xml:space="preserve"><value>Владелец</value></data>
   <data name="Items" xml:space="preserve"><value>Предметы</value></data>
+  <data name="AllInventories" xml:space="preserve"><value>Все коллекции</value></data>
+  <data name="NewInventory" xml:space="preserve"><value>Новая коллекция</value></data>
+  <data name="NoInventoriesFound" xml:space="preserve"><value>Коллекции не найдены.</value></data>
+  <data name="Created" xml:space="preserve"><value>Создано</value></data>
+  <data name="Profile" xml:space="preserve"><value>Профиль</value></data>
+  <data name="Member" xml:space="preserve"><value>Участник</value></data>
+  <data name="Blocked" xml:space="preserve"><value>Заблокирован</value></data>
+  <data name="Active" xml:space="preserve"><value>Активен</value></data>
+  <data name="MemberSince" xml:space="preserve"><value>Участник с</value></data>
+  <data name="LastLogin" xml:space="preserve"><value>Последний вход</value></data>
+  <data name="InventoriesOwned" xml:space="preserve"><value>Коллекций создано</value></data>
+  <data name="MyInventories" xml:space="preserve"><value>Мои коллекции</value></data>
+  <data name="InventoriesWithWriteAccess" xml:space="preserve"><value>Коллекции с правом записи</value></data>
+  <data name="NoInventoriesYet" xml:space="preserve"><value>Коллекций пока нет.</value></data>
+  <data name="NoWriteAccessGrants" xml:space="preserve"><value>Нет доступов для записи.</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Вход</value></data>
+  <data name="CreateAccount" xml:space="preserve"><value>Создать аккаунт</value></data>
+  <data name="AlreadyHaveAccount" xml:space="preserve"><value>Уже есть аккаунт?</value></data>
+  <data name="DontHaveAccount" xml:space="preserve"><value>Нет аккаунта?</value></data>
+  <data name="ContinueWith" xml:space="preserve"><value>Продолжить через</value></data>
+  <data name="OrSignInWith" xml:space="preserve"><value>Или войти через</value></data>
+  <data name="Min6Chars" xml:space="preserve"><value>Минимум 6 символов.</value></data>
+  <data name="RememberMe" xml:space="preserve"><value>Запомнить меня</value></data>
+  <data name="PasswordToggleAria" xml:space="preserve"><value>Переключить видимость пароля</value></data>
+  <data name="Discussion" xml:space="preserve"><value>Обсуждение</value></data>
+  <data name="Settings" xml:space="preserve"><value>Настройки</value></data>
+  <data name="CustomID" xml:space="preserve"><value>Кастомный ID</value></data>
+  <data name="Access" xml:space="preserve"><value>Доступ</value></data>
+  <data name="Fields" xml:space="preserve"><value>Поля</value></data>
+  <data name="Stats" xml:space="preserve"><value>Статистика</value></data>
+  <data name="AddItem" xml:space="preserve"><value>Добавить предмет</value></data>
+  <data name="DeleteInventory" xml:space="preserve"><value>Удалить коллекцию</value></data>
+  <data name="NoItemsYet" xml:space="preserve"><value>Предметов пока нет.</value></data>
+  <data name="UseButtonToAdd" xml:space="preserve"><value>Используйте кнопку выше, чтобы добавить.</value></data>
+  <data name="AddedBy" xml:space="preserve"><value>Добавил</value></data>
+  <data name="Date" xml:space="preserve"><value>Дата</value></data>
+  <data name="NoPostsYet" xml:space="preserve"><value>Сообщений пока нет. Будьте первыми!</value></data>
+  <data name="WriteCommentPlaceholder" xml:space="preserve"><value>Напишите комментарий… (Markdown поддерживается)</value></data>
+  <data name="Post" xml:space="preserve"><value>Отправить</value></data>
+  <data name="SignInToPost" xml:space="preserve"><value>Войдите, чтобы оставить комментарий.</value></data>
+  <data name="ConfirmDeleteInventory" xml:space="preserve"><value>Удалить всю коллекцию и все её предметы?</value></data>
+  <data name="New" xml:space="preserve"><value>Новая</value></data>
+  <data name="Category" xml:space="preserve"><value>Категория</value></data>
+  <data name="LastUpdated" xml:space="preserve"><value>Обновлено</value></data>
+  <data name="Description" xml:space="preserve"><value>Описание</value></data>
+  <data name="ResultsFor" xml:space="preserve"><value>Результаты для</value></data>
+  <data name="Tag" xml:space="preserve"><value>Тег</value></data>
+  <data name="ThemeLanguage" xml:space="preserve"><value>Тема / Язык</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Password" xml:space="preserve"><value>Пароль</value></data>
+  <data name="Name" xml:space="preserve"><value>Имя</value></data>
 </root>

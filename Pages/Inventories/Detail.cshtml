@@ -1,6 +1,9 @@
 @page "{id:guid}"
 @model InventoryApp.Pages.Inventories.DetailModel
 @using InventoryApp.Models
+@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
 @{
     ViewData["Title"] = Model.Inventory.Title;
     var inv    = Model.Inventory;
@@ -13,8 +16,8 @@
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
-        <li class="breadcrumb-item"><a asp-page="/Inventories/Index">Inventories</a></li>
+        <li class="breadcrumb-item"><a asp-page="/Index">@Localizer["Home"]</a></li>
+        <li class="breadcrumb-item"><a asp-page="/Inventories/Index">@Localizer["Inventories"]</a></li>
         <li class="breadcrumb-item active">@inv.Title</li>
     </ol>
 </nav>
@@ -31,17 +34,17 @@
             }
             @if (inv.IsPublic)
             {
-                <span class="ms-2 badge bg-success">Public</span>
+                <span class="ms-2 badge bg-success">@Localizer["Active"]</span>
             }
         </div>
     </div>
     @if (canEdit)
     {
         <form method="post" asp-page-handler="DeleteInventory"
-              onsubmit="return confirm('Delete this entire inventory and all its items?')">
+              onsubmit="return confirm('@Localizer["ConfirmDeleteInventory"]')">
             <input type="hidden" name="id" value="@inv.Id" />
             <button class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-trash me-1"></i>Delete Inventory
+                <i class="bi bi-trash me-1"></i>@Localizer["DeleteInventory"]
             </button>
         </form>
     }
@@ -59,14 +62,14 @@
     <li class="nav-item">
         <a class="nav-link @(Model.ActiveTab=="items"?"active":"")"
            href="?tab=items#invTabs">
-            <i class="bi bi-list-ul me-1"></i>Items
+            <i class="bi bi-list-ul me-1"></i>@Localizer["Items"]
             <span class="badge bg-secondary ms-1">@Model.Items.Count</span>
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link @(Model.ActiveTab=="discussion"?"active":"")"
            href="?tab=discussion#invTabs">
-            <i class="bi bi-chat-dots me-1"></i>Discussion
+            <i class="bi bi-chat-dots me-1"></i>@Localizer["Discussion"]
             <span class="badge bg-secondary ms-1">@Model.Comments.Count</span>
         </a>
     </li>
@@ -75,32 +78,32 @@
         <li class="nav-item">
             <a class="nav-link @(Model.ActiveTab=="settings"?"active":"")"
                href="?tab=settings#invTabs">
-                <i class="bi bi-gear me-1"></i>Settings
+                <i class="bi bi-gear me-1"></i>@Localizer["Settings"]
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link @(Model.ActiveTab=="customid"?"active":"")"
                href="?tab=customid#invTabs">
-                <i class="bi bi-fingerprint me-1"></i>Custom ID
+                <i class="bi bi-fingerprint me-1"></i>@Localizer["CustomID"]
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link @(Model.ActiveTab=="access"?"active":"")"
                href="?tab=access#invTabs">
-                <i class="bi bi-shield-lock me-1"></i>Access
+                <i class="bi bi-shield-lock me-1"></i>@Localizer["Access"]
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link @(Model.ActiveTab=="fields"?"active":"")"
                href="?tab=fields#invTabs">
-                <i class="bi bi-layout-three-columns me-1"></i>Fields
+                <i class="bi bi-layout-three-columns me-1"></i>@Localizer["Fields"]
             </a>
         </li>
     }
     <li class="nav-item">
         <a class="nav-link @(Model.ActiveTab=="stats"?"active":"")"
            href="?tab=stats#invTabs">
-            <i class="bi bi-bar-chart me-1"></i>Stats
+            <i class="bi bi-bar-chart me-1"></i>@Localizer["Stats"]
         </a>
     </li>
 </ul>
@@ -114,14 +117,14 @@
             <div class="mb-3">
                 <a asp-page="/Items/Edit" asp-route-inventoryId="@inv.Id"
                    class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-lg me-1"></i>Add Item
+                    <i class="bi bi-plus-lg me-1"></i>@Localizer["AddItem"]
                 </a>
             </div>
         }
 
         @if (!Model.Items.Any())
         {
-            <p class="text-muted">No items yet. @(canWrite ? "Use the button above to add one." : "")</p>
+            <p class="text-muted">@Localizer["NoItemsYet"] @(canWrite ? Localizer["UseButtonToAdd"] : "")</p>
         }
         else
         {
@@ -130,8 +133,8 @@
                     <thead class="table-dark">
                         <tr>
                             <th>ID</th>
-                            <th>Added by</th>
-                            <th>Date</th>
+                            <th>@Localizer["AddedBy"]</th>
+                            <th>@Localizer["Date"]</th>
                             @foreach (var f in visibleFields)
                             {
                                 <th title="@f.Description">@f.Title</th>
@@ -181,7 +184,7 @@
         <div id="commentsList" style="max-height:480px;overflow-y:auto" class="mb-4">
             @if (!Model.Comments.Any())
             {
-                <p class="text-muted">No posts yet. Be the first!</p>
+                <p class="text-muted">@Localizer["NoPostsYet"]</p>
             }
             @foreach (var c in Model.Comments)
             {
@@ -206,17 +209,17 @@
                 <input type="hidden" name="id" value="@inv.Id" />
                 <div class="mb-2">
                     <textarea name="body" class="form-control" rows="3"
-                              placeholder="Write a comment… (Markdown supported)"></textarea>
+                              placeholder="@Localizer["WriteCommentPlaceholder"]"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="bi bi-send me-1"></i>Post
+                    <i class="bi bi-send me-1"></i>@Localizer["Post"]
                 </button>
             </form>
         }
         else
         {
             <p class="text-muted small">
-                <a asp-page="/Auth/Login">Sign in</a> to post a comment.
+                <a asp-page="/Auth/Login">@Localizer["SignIn"]</a> @Localizer["SignInToPost"]
             </p>
         }
     </div>

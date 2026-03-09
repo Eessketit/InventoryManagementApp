@@ -1,7 +1,10 @@
 @page
 @model InventoryApp.Pages.Auth.LoginModel
+@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
 @{
-    ViewData["Title"] = "Sign in";
+    ViewData["Title"] = Localizer["SignIn"];
 }
 
 <div class="row justify-content-center">
@@ -10,7 +13,7 @@
             <div class="card-body p-4">
 
                 <h3 class="text-center mb-4">
-                    <i class="bi bi-box-arrow-in-right"></i> Sign in
+                    <i class="bi bi-box-arrow-in-right"></i> @Localizer["SignIn"]
                 </h3>
 
                 @if (TempData["RegistrationSuccess"] is string msg)
@@ -34,7 +37,7 @@
                                    id="passwordInput" autocomplete="current-password" />
                             <button class="btn btn-outline-secondary" type="button"
                                     onclick="togglePwd('passwordInput', this)"
-                                    aria-label="Toggle password visibility">
+                                    aria-label="@Localizer["PasswordToggleAria"]">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
@@ -47,14 +50,14 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                        <i class="bi bi-box-arrow-in-right me-1"></i> @Localizer["Login"]
                     </button>
                 </form>
 
                 @if (Model.ExternalProviders.Count > 0)
                 {
                     <hr class="my-4" />
-                    <p class="text-center text-muted small mb-3">Or sign in with</p>
+                    <p class="text-center text-muted small mb-3">@Localizer["OrSignInWith"]</p>
                     <div class="d-grid gap-2">
                         @foreach (var provider in Model.ExternalProviders)
                         {
@@ -73,7 +76,7 @@
                                     {
                                         <i class="bi bi-box-arrow-in-right me-2"></i>
                                     }
-                                    Continue with @provider.DisplayName
+                                    @Localizer["ContinueWith"] @provider.DisplayName
                                 </button>
                             </form>
                         }
@@ -82,8 +85,8 @@
 
                 <div class="text-center mt-3">
                     <small>
-                        Don't have an account?
-                        <a asp-page="/Auth/Register">Register</a>
+                        @Localizer["DontHaveAccount"]
+                        <a asp-page="/Auth/Register">@Localizer["Register"]</a>
                     </small>
                 </div>
             </div>

@@ -73,4 +73,55 @@
   <data name="Title" xml:space="preserve"><value>Title</value></data>
   <data name="Owner" xml:space="preserve"><value>Owner</value></data>
   <data name="Items" xml:space="preserve"><value>Items</value></data>
+  <data name="AllInventories" xml:space="preserve"><value>All Inventories</value></data>
+  <data name="NewInventory" xml:space="preserve"><value>New Inventory</value></data>
+  <data name="NoInventoriesFound" xml:space="preserve"><value>No inventories found.</value></data>
+  <data name="Created" xml:space="preserve"><value>Created</value></data>
+  <data name="Profile" xml:space="preserve"><value>Profile</value></data>
+  <data name="Member" xml:space="preserve"><value>Member</value></data>
+  <data name="Blocked" xml:space="preserve"><value>Blocked</value></data>
+  <data name="Active" xml:space="preserve"><value>Active</value></data>
+  <data name="MemberSince" xml:space="preserve"><value>Member since</value></data>
+  <data name="LastLogin" xml:space="preserve"><value>Last login</value></data>
+  <data name="InventoriesOwned" xml:space="preserve"><value>Inventories owned</value></data>
+  <data name="MyInventories" xml:space="preserve"><value>My Inventories</value></data>
+  <data name="InventoriesWithWriteAccess" xml:space="preserve"><value>Inventories with Write Access</value></data>
+  <data name="NoInventoriesYet" xml:space="preserve"><value>No inventories yet.</value></data>
+  <data name="NoWriteAccessGrants" xml:space="preserve"><value>No write-access grants yet.</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Sign in</value></data>
+  <data name="CreateAccount" xml:space="preserve"><value>Create account</value></data>
+  <data name="AlreadyHaveAccount" xml:space="preserve"><value>Already have an account?</value></data>
+  <data name="DontHaveAccount" xml:space="preserve"><value>Don't have an account?</value></data>
+  <data name="ContinueWith" xml:space="preserve"><value>Continue with</value></data>
+  <data name="OrSignInWith" xml:space="preserve"><value>Or sign in with</value></data>
+  <data name="Min6Chars" xml:space="preserve"><value>Minimum 6 characters.</value></data>
+  <data name="RememberMe" xml:space="preserve"><value>Remember me</value></data>
+  <data name="PasswordToggleAria" xml:space="preserve"><value>Toggle password visibility</value></data>
+  <data name="Discussion" xml:space="preserve"><value>Discussion</value></data>
+  <data name="Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="CustomID" xml:space="preserve"><value>Custom ID</value></data>
+  <data name="Access" xml:space="preserve"><value>Access</value></data>
+  <data name="Fields" xml:space="preserve"><value>Fields</value></data>
+  <data name="Stats" xml:space="preserve"><value>Stats</value></data>
+  <data name="AddItem" xml:space="preserve"><value>Add Item</value></data>
+  <data name="DeleteInventory" xml:space="preserve"><value>Delete Inventory</value></data>
+  <data name="NoItemsYet" xml:space="preserve"><value>No items yet.</value></data>
+  <data name="UseButtonToAdd" xml:space="preserve"><value>Use the button above to add one.</value></data>
+  <data name="AddedBy" xml:space="preserve"><value>Added by</value></data>
+  <data name="Date" xml:space="preserve"><value>Date</value></data>
+  <data name="NoPostsYet" xml:space="preserve"><value>No posts yet. Be the first!</value></data>
+  <data name="WriteCommentPlaceholder" xml:space="preserve"><value>Write a comment… (Markdown supported)</value></data>
+  <data name="Post" xml:space="preserve"><value>Post</value></data>
+  <data name="SignInToPost" xml:space="preserve"><value>Sign in to post a comment.</value></data>
+  <data name="ConfirmDeleteInventory" xml:space="preserve"><value>Delete this entire inventory and all its items?</value></data>
+  <data name="New" xml:space="preserve"><value>New</value></data>
+  <data name="Category" xml:space="preserve"><value>Category</value></data>
+  <data name="LastUpdated" xml:space="preserve"><value>Last updated</value></data>
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="ResultsFor" xml:space="preserve"><value>Results for</value></data>
+  <data name="Tag" xml:space="preserve"><value>Tag</value></data>
+  <data name="ThemeLanguage" xml:space="preserve"><value>Theme / Language</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
 </root>

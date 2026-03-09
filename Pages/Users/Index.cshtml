@@ -1,7 +1,10 @@
 @page
 @model InventoryApp.Pages.Users.IndexModel
+@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
 @{
-    ViewData["Title"] = "Profile — " + Model.ProfileUser?.Name;
+    ViewData["Title"] = Localizer["Profile"] + " — " + Model.ProfileUser?.Name;
     var u = Model.ProfileUser;
     var isAdmin   = u?.IsAdmin == true;
     var isBlocked = u?.LockoutEnd.HasValue == true && u.LockoutEnd > DateTimeOffset.UtcNow;
@@ -20,19 +23,19 @@
         <div class="d-flex gap-2 flex-wrap">
             @if (isAdmin)
             {
-                <span class="badge bg-warning text-dark"><i class="bi bi-shield-fill me-1"></i>Admin</span>
+                <span class="badge bg-warning text-dark"><i class="bi bi-shield-fill me-1"></i>@Localizer["Admin"]</span>
             }
             else
             {
-                <span class="badge bg-primary"><i class="bi bi-person-fill me-1"></i>Member</span>
+                <span class="badge bg-primary"><i class="bi bi-person-fill me-1"></i>@Localizer["Member"]</span>
             }
             @if (isBlocked)
             {
-                <span class="badge bg-danger"><i class="bi bi-lock-fill me-1"></i>Blocked</span>
+                <span class="badge bg-danger"><i class="bi bi-lock-fill me-1"></i>@Localizer["Blocked"]</span>
             }
             else
             {
-                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Active</span>
+                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>@Localizer["Active"]</span>
             }
         </div>
     </div>
@@ -43,23 +46,23 @@
     <div class="col-sm-6 col-md-3">
         <div class="card h-100 text-center">
             <div class="card-body">
-                <div class="text-muted small mb-1">Member since</div>
-                <div class="fw-semibold">@u?.RegisteredAt.ToString("MMMM d, yyyy")</div>
+                <div class="text-muted small mb-1">@Localizer["MemberSince"]</div>
+                <div class="fw-semibold">@u?.RegisteredAt.ToString("D", System.Globalization.CultureInfo.CurrentCulture)</div>
             </div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
         <div class="card h-100 text-center">
             <div class="card-body">
-                <div class="text-muted small mb-1">Last login</div>
-                <div class="fw-semibold">@(u?.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</div>
+                <div class="text-muted small mb-1">@Localizer["LastLogin"]</div>
+                <div class="fw-semibold">@(u?.LastLoginAt?.ToString("g", System.Globalization.CultureInfo.CurrentCulture) ?? "—")</div>
             </div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
         <div class="card h-100 text-center">
             <div class="card-body">
-                <div class="text-muted small mb-1">Inventories owned</div>
+                <div class="text-muted small mb-1">@Localizer["InventoriesOwned"]</div>
                 <div class="fw-semibold fs-4">@Model.OwnedInvs.Count</div>
             </div>
         </div>
@@ -67,7 +70,7 @@
     <div class="col-sm-6 col-md-3">
         <div class="card h-100 text-center">
             <div class="card-body">
-                <div class="text-muted small mb-1">Theme / Language</div>
+                <div class="text-muted small mb-1">@Localizer["ThemeLanguage"]</div>
                 <div class="fw-semibold">
                     @(u?.ThemePreference == "dark" ? "🌙 Dark" : "☀️ Light")
                     &nbsp;·&nbsp;
@@ -81,18 +84,18 @@
 <!-- Owned inventories table -->
 <div class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-2">
-        <h5 class="mb-0"><i class="bi bi-boxes me-2 text-primary"></i>My Inventories</h5>
+        <h5 class="mb-0"><i class="bi bi-boxes me-2 text-primary"></i>@Localizer["MyInventories"]</h5>
         @if (isMe)
         {
             <a asp-page="/Inventories/Create" class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-lg me-1"></i>New
+                <i class="bi bi-plus-lg me-1"></i>@Localizer["New"]
             </a>
         }
     </div>
 
     @if (!Model.OwnedInvs.Any())
     {
-        <p class="text-muted small">No inventories yet.</p>
+        <p class="text-muted small">@Localizer["NoInventoriesYet"]</p>
     }
     else
     {
@@ -100,10 +103,10 @@
             <table class="table table-hover table-sm align-middle">
                 <thead class="table-secondary">
                     <tr>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th class="text-center">Items</th>
-                        <th>Last updated</th>
+                        <th>@Localizer["Title"]</th>
+                        <th>@Localizer["Category"]</th>
+                        <th class="text-center">@Localizer["Items"]</th>
+                        <th>@Localizer["LastUpdated"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -125,10 +128,10 @@
 
 <!-- Write-access inventories table -->
 <div>
-    <h5 class="mb-2"><i class="bi bi-pencil-square me-2 text-success"></i>Inventories with Write Access</h5>
+    <h5 class="mb-2"><i class="bi bi-pencil-square me-2 text-success"></i>@Localizer["InventoriesWithWriteAccess"]</h5>
     @if (!Model.AccessInvs.Any())
     {
-        <p class="text-muted small">No write-access grants yet.</p>
+        <p class="text-muted small">@Localizer["NoWriteAccessGrants"]</p>
     }
     else
     {
@@ -136,10 +139,10 @@
             <table class="table table-hover table-sm align-middle">
                 <thead class="table-secondary">
                     <tr>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th class="text-center">Items</th>
-                        <th>Last updated</th>
+                        <th>@Localizer["Title"]</th>
+                        <th>@Localizer["Category"]</th>
+                        <th class="text-center">@Localizer["Items"]</th>
+                        <th>@Localizer["LastUpdated"]</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -1,7 +1,10 @@
 @page
 @model InventoryApp.Pages.Auth.RegisterModel
+@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = Localizer["Register"];
 }
 
 <div class="row justify-content-center">
@@ -10,7 +13,7 @@
             <div class="card-body p-4">
 
                 <h3 class="text-center mb-4">
-                    <i class="bi bi-person-plus"></i> Register
+                    <i class="bi bi-person-plus"></i> @Localizer["Register"]
                 </h3>
 
                 <form method="post" novalidate>
@@ -35,23 +38,23 @@
                                    id="registerPasswordInput" autocomplete="new-password" />
                             <button class="btn btn-outline-secondary" type="button"
                                     onclick="togglePwd('registerPasswordInput', this)"
-                                    aria-label="Toggle password visibility">
+                                    aria-label="@Localizer["PasswordToggleAria"]">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
-                        <div class="form-text">Minimum 6 characters.</div>
+                        <div class="form-text">@Localizer["Min6Chars"]</div>
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
 
                     <button type="submit" class="btn btn-success w-100">
-                        <i class="bi bi-person-check me-1"></i> Create account
+                        <i class="bi bi-person-check me-1"></i> @Localizer["CreateAccount"]
                     </button>
                 </form>
 
                 <div class="text-center mt-3">
                     <small>
-                        Already have an account?
-                        <a asp-page="/Auth/Login">Sign in</a>
+                        @Localizer["AlreadyHaveAccount"]
+                        <a asp-page="/Auth/Login">@Localizer["SignIn"]</a>
                     </small>
                 </div>
             </div>

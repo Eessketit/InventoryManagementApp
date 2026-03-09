@@ -25,13 +25,13 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
-        [Required, EmailAddress, Display(Name = "Email")]
+        [Required, EmailAddress, Display(Name = "Email", ResourceType = typeof(SharedResource))]
         public string Email { get; set; } = string.Empty;
 
-        [Required, DataType(DataType.Password), Display(Name = "Password")]
+        [Required, DataType(DataType.Password), Display(Name = "Password", ResourceType = typeof(SharedResource))]
         public string Password { get; set; } = string.Empty;
 
-        [Display(Name = "Remember me")]
+        [Display(Name = "RememberMe", ResourceType = typeof(SharedResource))]
         public bool RememberMe { get; set; }
     }
 

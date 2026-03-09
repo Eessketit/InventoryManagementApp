@@ -1,37 +1,40 @@
 @page
 @model InventoryApp.Pages.Inventories.IndexModel
+@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
 @{
-    ViewData["Title"] = Model.FilterTag != null ? $"Tag: {Model.FilterTag}"
-                      : Model.SearchQuery != null ? $"Search: {Model.SearchQuery}"
-                      : "All Inventories";
+    ViewData["Title"] = Model.FilterTag != null ? $"{Localizer["Tag"]}: {Model.FilterTag}"
+                      : Model.SearchQuery != null ? $"{Localizer["Search"]}: {Model.SearchQuery}"
+                      : Localizer["AllInventories"];
 }
 
 <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
     <h3 class="mb-0">
         @if (Model.FilterTag != null)
         {
-            <i class="bi bi-tag-fill me-2 text-primary"></i><span>Tag: <em>@Model.FilterTag</em></span>
+            <i class="bi bi-tag-fill me-2 text-primary"></i><span>@Localizer["Tag"]: <em>@Model.FilterTag</em></span>
         }
         else if (Model.SearchQuery != null)
         {
-            <i class="bi bi-search me-2"></i><span>Results for "<em>@Model.SearchQuery</em>"</span>
+            <i class="bi bi-search me-2"></i><span>@Localizer["ResultsFor"] "<em>@Model.SearchQuery</em>"</span>
         }
         else
         {
-            <i class="bi bi-boxes me-2"></i><span>All Inventories</span>
+            <i class="bi bi-boxes me-2"></i><span>@Localizer["AllInventories"]</span>
         }
     </h3>
     @if (User.Identity?.IsAuthenticated == true)
     {
         <a asp-page="/Inventories/Create" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-lg me-1"></i>New Inventory
+            <i class="bi bi-plus-lg me-1"></i>@Localizer["NewInventory"]
         </a>
     }
 </div>
 
 @if (!Model.Inventories.Any())
 {
-    <div class="alert alert-info">No inventories found.</div>
+    <div class="alert alert-info">@Localizer["NoInventoriesFound"]</div>
 }
 else
 {
@@ -39,12 +42,12 @@ else
         <table class="table table-hover align-middle" id="inventoriesTable">
             <thead class="table-dark">
                 <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Owner</th>
-                    <th>Items</th>
-                    <th>Tags</th>
-                    <th>Created</th>
+                    <th>@Localizer["Title"]</th>
+                    <th>@Localizer["Description"]</th>
+                    <th>@Localizer["Owner"]</th>
+                    <th>@Localizer["Items"]</th>
+                    <th>@Localizer["TagCloud"]</th>
+                    <th>@Localizer["Created"]</th>
                 </tr>
             </thead>
             <tbody>
