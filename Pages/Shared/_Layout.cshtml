@@ -1,5 +1,8 @@
-﻿<!DOCTYPE html>
-<html lang="en" data-bs-theme="@(User.FindFirst("Theme")?.Value ?? "light")">
+﻿@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
+<!DOCTYPE html>
+<html lang="@(System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName)" data-bs-theme="@(User.FindFirst("Theme")?.Value ?? "light")">
 
 <head>
     <meta charset="utf-8" />
@@ -50,7 +53,7 @@
                     <ul class="navbar-nav ms-auto align-items-center gap-1">
                         <li class="nav-item">
                             <a class="nav-link" asp-page="/Inventories/Index">
-                                <i class="bi bi-boxes me-1"></i>Inventories
+                                <i class="bi bi-boxes me-1"></i>@Localizer["Inventories"]
                             </a>
                         </li>
                         <li class="nav-item">
@@ -69,13 +72,33 @@
                             </form>
                         </li>
 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle btn btn-sm btn-outline-secondary border-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-translate me-1"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li>
+                                    <a class="dropdown-item @(System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "en" ? "active" : "")" 
+                                       asp-page="/SetLanguage" asp-route-culture="en" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">
+                                        English
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "ru" ? "active" : "")" 
+                                       asp-page="/SetLanguage" asp-route-culture="ru" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">
+                                        Русский
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             @if (User.FindFirst("IsAdmin")?.Value == "true")
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-page="/Admin/Users">
-                                        <i class="bi bi-shield-lock me-1"></i> Admin
+                                        <i class="bi bi-shield-lock me-1"></i> @Localizer["Admin"]
                                     </a>
                                 </li>
                             }
@@ -89,7 +112,7 @@
 
                             <li class="nav-item">
                                 <a class="nav-link text-danger" asp-page="/Auth/Logout">
-                                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                                    <i class="bi bi-box-arrow-right me-1"></i> @Localizer["Logout"]
                                 </a>
                             </li>
                         }
@@ -97,12 +120,12 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-page="/Auth/Login">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> @Localizer["Login"]
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-page="/Auth/Register">
-                                    <i class="bi bi-person-plus me-1"></i> Register
+                                    <i class="bi bi-person-plus me-1"></i> @Localizer["Register"]
                                 </a>
                             </li>
                         }

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using InventoryApp.Models;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace InventoryApp.Middleware;
 
@@ -47,6 +49,15 @@ public class UserStatusMiddleware
                 await signInManager.SignOutAsync();
                 context.Response.Redirect("/Auth/Login");
                 return;
+            }
+
+            // Apply saved language preference if no manual cookie is set
+            if (!context.Request.Cookies.ContainsKey(CookieRequestCultureProvider.DefaultCookieName) && 
+                !string.IsNullOrEmpty(user.LanguagePreference))
+            {
+                var culture = new CultureInfo(user.LanguagePreference);
+                CultureInfo.CurrentCulture = culture;
+                CultureInfo.CurrentUICulture = culture;
             }
         }
 

@@ -1,7 +1,10 @@
 ﻿@page
 @model InventoryApp.Pages.IndexModel
+@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
 @{
-    ViewData["Title"] = "InvenTrack — Home";
+    ViewData["Title"] = "InvenTrack — " + Localizer["Home"];
 }
 
 <div class="row g-4">
@@ -9,8 +12,8 @@
     <!-- Latest Inventories -->
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Latest Inventories</h5>
-            <a asp-page="/Inventories/Index" class="btn btn-outline-primary btn-sm">View all</a>
+            <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>@Localizer["LatestInventories"]</h5>
+            <a asp-page="/Inventories/Index" class="btn btn-outline-primary btn-sm">@Localizer["ViewAll"]</a>
         </div>
         @if (!Model.Latest.Any())
         {
@@ -22,9 +25,9 @@
                 <table class="table table-hover table-sm align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>Title</th>
-                            <th>Owner</th>
-                            <th class="text-center">Items</th>
+                            <th>@Localizer["Title"]</th>
+                            <th>@Localizer["Owner"]</th>
+                            <th class="text-center">@Localizer["Items"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,9 +54,8 @@
         }
     </div>
 
-    <!-- Top 5 Popular -->
     <div class="col-md-6">
-        <h5 class="mb-2"><i class="bi bi-fire me-2 text-danger"></i>Most Popular</h5>
+        <h5 class="mb-2"><i class="bi bi-fire me-2 text-danger"></i>@Localizer["MostPopular"]</h5>
         @if (!Model.Popular.Any())
         {
             <p class="text-muted small">—</p>
@@ -73,9 +75,8 @@
         }
     </div>
 
-    <!-- Tag Cloud -->
     <div class="col-md-6">
-        <h5 class="mb-2"><i class="bi bi-tags me-2 text-success"></i>Tag Cloud</h5>
+        <h5 class="mb-2"><i class="bi bi-tags me-2 text-success"></i>@Localizer["TagCloud"]</h5>
         @if (!Model.TagCloud.Any())
         {
             <p class="text-muted small">No tags yet.</p>

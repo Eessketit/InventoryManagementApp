@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using InventoryApp;
 using InventoryApp.Data;
 using InventoryApp.Infrastructure;
 using InventoryApp.Middleware;
 using InventoryApp.Models;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,7 +111,14 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSingleton<InventoryApp.Services.MarkdownService>();
 
-builder.Services.AddRazorPages();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.AddRazorPages()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization(options => {
+        options.DataAnnotationLocalizerProvider = (type, factory) =>
+            factory.Create(typeof(SharedResource));
+    });
 
 // ── BUILD ─────────────────────────────────────────────────────────────────────
 var app = builder.Build();
@@ -169,6 +179,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseAuthentication();
+var supportedCultures = new[] { "en", "ru" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+// Use a custom provider to read from the user's DB preference if logged in?
+// For now, cookie is sufficient and we update it in SetLanguage.
+app.UseRequestLocalization(localizationOptions);
+
 app.UseMiddleware<UserStatusMiddleware>();
 app.UseAuthorization();
 app.MapRazorPages();
