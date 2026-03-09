@@ -22,13 +22,13 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
-        [Required, EmailAddress, Display(Name = "Email", ResourceType = typeof(SharedResource))]
+        [Required, EmailAddress, Display(Name = "Email")]
         public string Email { get; set; } = string.Empty;
 
-        [Required, MinLength(2), Display(Name = "Name", ResourceType = typeof(SharedResource))]
+        [Required, MinLength(2), Display(Name = "Name")]
         public string Name { get; set; } = string.Empty;
 
-        [Required, MinLength(6), DataType(DataType.Password), Display(Name = "Password", ResourceType = typeof(SharedResource))]
+        [Required, MinLength(6), DataType(DataType.Password), Display(Name = "Password")]
         public string Password { get; set; } = string.Empty;
     }
 

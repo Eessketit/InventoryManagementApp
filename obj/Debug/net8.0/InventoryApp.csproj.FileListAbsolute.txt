@@ -1,0 +1,12 @@
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\InventoryApp.exe
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\InventoryApp.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\en\InventoryApp.resources.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\ru\InventoryApp.resources.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\AspNet.Security.OAuth.GitHub.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Relational.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\Npgsql.dll
+D:\Itransition\InventoryManagementApp\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
