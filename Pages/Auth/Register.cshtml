@@ -51,6 +51,35 @@
                     </button>
                 </form>
 
+                @if (Model.ExternalProviders.Count > 0)
+                {
+                    <hr class="my-4" />
+                    <p class="text-center text-muted small mb-3">@Localizer["OrSignInWith"]</p>
+                    <div class="d-grid gap-2">
+                        @foreach (var provider in Model.ExternalProviders)
+                        {
+                            <form method="post" asp-page-handler="ExternalLogin">
+                                <input type="hidden" name="provider" value="@provider.Name" />
+                                <button type="submit" class="btn btn-outline-secondary w-100">
+                                    @if (provider.Name == "Google")
+                                    {
+                                        <i class="bi bi-google me-2"></i>
+                                    }
+                                    else if (provider.Name == "GitHub")
+                                    {
+                                        <i class="bi bi-github me-2"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    }
+                                    @Localizer["ContinueWith"] @provider.DisplayName
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+
                 <div class="text-center mt-3">
                     <small>
                         @Localizer["AlreadyHaveAccount"]

@@ -20,6 +20,9 @@ public class RegisterModel : PageModel
     [BindProperty]
     public InputModel Input { get; set; } = new();
 
+    public IReadOnlyList<Microsoft.AspNetCore.Authentication.AuthenticationScheme> ExternalProviders
+        { get; set; } = [];
+
     public class InputModel
     {
         [Required, EmailAddress, Display(Name = "Email")]
@@ -32,8 +35,15 @@ public class RegisterModel : PageModel
         public string Password { get; set; } = string.Empty;
     }
 
+    public async Task OnGetAsync()
+    {
+        ExternalProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
+        ExternalProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
         if (!ModelState.IsValid)
             return Page();
 
@@ -59,5 +69,13 @@ public class RegisterModel : PageModel
         // builds all necessary claims (IsAdmin=false, Theme=light, etc.)
         await _signInManager.SignInAsync(user, isPersistent: false);
         return RedirectToPage("/Users/Index");
+    }
+
+    /// <summary>Kicks off the external OAuth flow.</summary>
+    public IActionResult OnPostExternalLogin(string provider)
+    {
+        var redirectUrl = Url.Page("/Auth/ExternalCallback");
+        var properties  = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return Challenge(properties, provider);
     }
 }

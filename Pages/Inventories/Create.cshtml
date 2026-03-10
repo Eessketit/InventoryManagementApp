@@ -1,34 +1,37 @@
 @page
 @model InventoryApp.Pages.Inventories.CreateModel
+@using Microsoft.Extensions.Localization
+@using InventoryApp
+@inject IStringLocalizer<SharedResource> Localizer
 @{
-    ViewData["Title"] = "New Inventory";
+    ViewData["Title"] = Localizer["NewInventory"];
 }
 
 <div class="row justify-content-center">
     <div class="col-lg-7">
-        <h3 class="mb-4"><i class="bi bi-plus-square me-2"></i>New Inventory</h3>
+        <h3 class="mb-4"><i class="bi bi-plus-square me-2"></i>@Localizer["NewInventory"]</h3>
 
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
             <div class="mb-3">
-                <label asp-for="Title" class="form-label fw-semibold"></label>
+                <label asp-for="Title" class="form-label fw-semibold">@Localizer["Title"]</label>
                 <input asp-for="Title" class="form-control" placeholder="e.g. Library Books" autofocus />
                 <span asp-validation-for="Title" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Description" class="form-label fw-semibold">
-                    Description <span class="text-muted fw-normal">(Markdown supported)</span>
+                    @Localizer["Description"] <span class="text-muted fw-normal">(@Localizer["MarkdownSupported"])</span>
                 </label>
                 <textarea asp-for="Description" class="form-control" rows="4"
                           placeholder="Describe what this inventory tracks…"></textarea>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Category" class="form-label fw-semibold"></label>
+                <label asp-for="Category" class="form-label fw-semibold">@Localizer["Category"]</label>
                 <select asp-for="Category" class="form-select">
-                    <option value="">— Select category —</option>
+                    <option value="">@Localizer["SelectCategory"]</option>
                     @foreach (var cat in InventoryApp.Pages.Inventories.CreateModel.Categories)
                     {
                         <option value="@cat">@cat</option>
@@ -39,15 +42,15 @@
             <div class="mb-4 form-check">
                 <input asp-for="IsPublic" class="form-check-input" />
                 <label asp-for="IsPublic" class="form-check-label">
-                    Public — any authenticated user can add items
+                    @Localizer["PublicDescription"]
                 </label>
             </div>
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check2 me-1"></i>Create
+                    <i class="bi bi-check2 me-1"></i>@Localizer["Create"]
                 </button>
-                <a asp-page="/Inventories/Index" class="btn btn-outline-secondary">Cancel</a>
+                <a asp-page="/Inventories/Index" class="btn btn-outline-secondary">@Localizer["Cancel"]</a>
             </div>
         </form>
     </div>

@@ -17,7 +17,7 @@
         </div>
         @if (!Model.Latest.Any())
         {
-            <p class="text-muted">No inventories yet.</p>
+            <p class="text-muted">@Localizer["NoInventoriesFound"]</p>
         }
         else
         {
@@ -68,7 +68,7 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <a asp-page="/Inventories/Detail" asp-route-id="@inv.Id"
                            class="text-decoration-none fw-semibold">@inv.Title</a>
-                        <span class="badge bg-primary rounded-pill">@inv.ItemCount items</span>
+                        <span class="badge bg-primary rounded-pill">@string.Format(Localizer["ItemsCount"], inv.ItemCount)</span>
                     </li>
                 }
             </ol>
@@ -79,7 +79,7 @@
         <h5 class="mb-2"><i class="bi bi-tags me-2 text-success"></i>@Localizer["TagCloud"]</h5>
         @if (!Model.TagCloud.Any())
         {
-            <p class="text-muted small">No tags yet.</p>
+            <p class="text-muted small">@Localizer["NoTagsYet"]</p>
         }
         else
         {
