@@ -11,14 +11,14 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── KESTREL ──────────────────────────────────────────────────────────────────
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
     options.ListenAnyIP(int.Parse(port));
 });
 
-// ── DATABASE ─────────────────────────────────────────────────────────────────
+
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 string connectionString;
 
@@ -45,7 +45,7 @@ else
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// ── IDENTITY ──────────────────────────────────────────────────────────────────
+
 builder.Services
     .AddIdentity<AppUser, IdentityRole<Guid>>(options =>
     {
@@ -61,26 +61,21 @@ builder.Services
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// ── CUSTOM CLAIMS FACTORY ────────────────────────────────────────────────────
-// Replaces the default factory so IsAdmin/DisplayName/Theme/Lang are always
-// included in the cookie, read directly from the AppUser entity.
 builder.Services
     .AddScoped<IUserClaimsPrincipalFactory<AppUser>, AppUserClaimsPrincipalFactory>();
 
-// ── COOKIE SETTINGS ───────────────────────────────────────────────────────────
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Auth/Login";
     options.AccessDeniedPath = "/Auth/Login";
     options.Cookie.HttpOnly = true;
     options.SlidingExpiration = true;
-    // Fix for "Remember Me": when isPersistent=false the cookie is session-only.
-    // When isPersistent=true (Remember Me checked) it lives for 30 days.
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 
-// ── OAUTH ─────────────────────────────────────────────────────────────────────
+
 var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
 var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 var githubClientId = builder.Configuration["Authentication:GitHub:ClientId"];
@@ -104,7 +99,7 @@ if (!string.IsNullOrWhiteSpace(githubClientId) && !string.IsNullOrWhiteSpace(git
         options.Scope.Add("user:email");
     });
 
-// ── AUTHORIZATION ─────────────────────────────────────────────────────────────
+
 builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireClaim("IsAdmin", "true")));
@@ -120,10 +115,9 @@ builder.Services.AddRazorPages()
             factory.Create(typeof(SharedResource));
     });
 
-// ── BUILD ─────────────────────────────────────────────────────────────────────
+
 var app = builder.Build();
 
-// ── MIGRATIONS + ADMIN SEED ───────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -131,8 +125,6 @@ using (var scope = app.Services.CreateScope())
 
     db.Database.Migrate();
 
-    // If no admin exists in the DB, promote the first user OR create a seed admin.
-    // Credentials come from config / environment so they're never hard-coded.
     var seedEmail = builder.Configuration["Seed:AdminEmail"];
     var seedPassword = builder.Configuration["Seed:AdminPassword"];
 
@@ -185,8 +177,6 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 
-// Use a custom provider to read from the user's DB preference if logged in?
-// For now, cookie is sufficient and we update it in SetLanguage.
 app.UseRequestLocalization(localizationOptions);
 
 app.UseMiddleware<UserStatusMiddleware>();

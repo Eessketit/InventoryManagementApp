@@ -28,7 +28,6 @@ public class ExternalCallbackModel : PageModel
             return Page();
         }
 
-        // Try signing in with the existing external login link
         var result = await _signInManager.ExternalLoginSignInAsync(
             info.LoginProvider, info.ProviderKey,
             isPersistent: false, bypassTwoFactor: true);
@@ -41,7 +40,6 @@ public class ExternalCallbackModel : PageModel
 
         if (result.Succeeded)
         {
-            // Update last login
             var existing = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
             if (existing != null)
             {
@@ -51,7 +49,7 @@ public class ExternalCallbackModel : PageModel
             return RedirectToPage("/Index");
         }
 
-        // ── First-time OAuth user: auto-create local account ──────────────────
+
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         if (string.IsNullOrWhiteSpace(email))
         {
@@ -59,7 +57,6 @@ public class ExternalCallbackModel : PageModel
             return Page();
         }
 
-        // Re-use existing local account if email already registered
         var user = await _userManager.FindByEmailAsync(email)
                    ?? BuildNewUser(info, email);
 
@@ -78,7 +75,6 @@ public class ExternalCallbackModel : PageModel
         user.LastLoginAt = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
 
-        // AppUserClaimsPrincipalFactory builds claims automatically
         await _signInManager.SignInAsync(user, isPersistent: false);
         return RedirectToPage("/Index");
     }

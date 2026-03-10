@@ -25,7 +25,6 @@ public class UserStatusMiddleware
     {
         var path = context.Request.Path.Value?.ToLower() ?? string.Empty;
 
-        // Allow auth/static paths through without DB check
         if (path.StartsWith("/auth/login")
             || path.StartsWith("/auth/register")
             || path.StartsWith("/auth/logout")
@@ -43,7 +42,6 @@ public class UserStatusMiddleware
         {
             var user = await userManager.GetUserAsync(context.User);
 
-            // Force logout if user was deleted or locked out (blocked)
             if (user == null || await userManager.IsLockedOutAsync(user))
             {
                 await signInManager.SignOutAsync();
@@ -51,7 +49,6 @@ public class UserStatusMiddleware
                 return;
             }
 
-            // Apply saved language preference if no manual cookie is set
             if (!context.Request.Cookies.ContainsKey(CookieRequestCultureProvider.DefaultCookieName) && 
                 !string.IsNullOrEmpty(user.LanguagePreference))
             {

@@ -9,7 +9,7 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    // ── DbSets ────────────────────────────────────────────────────────────────
+
     public DbSet<Inventory>       Inventories    { get; set; }
     public DbSet<Tag>             Tags           { get; set; }
     public DbSet<InventoryTag>    InventoryTags  { get; set; }
@@ -22,9 +22,9 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(builder); // registers Identity tables
+        base.OnModelCreating(builder);
 
-        // ── Identity table renames ────────────────────────────────────────────
+
         builder.Entity<AppUser>().ToTable("users");
         builder.Entity<IdentityRole<Guid>>().ToTable("roles");
         builder.Entity<IdentityUserRole<Guid>>().ToTable("user_roles");
@@ -40,7 +40,7 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             e.Property(u => u.ThemePreference).HasMaxLength(10).HasDefaultValue("light");
         });
 
-        // ── Inventory ─────────────────────────────────────────────────────────
+
         builder.Entity<Inventory>(e =>
         {
             e.ToTable("inventories");
@@ -48,9 +48,6 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             e.Property(i => i.Category).HasMaxLength(100);
             e.Property(i => i.ImageUrl).HasMaxLength(1000);
 
-            // Optimistic concurrency via PostgreSQL xmin system column.
-            // xmin is automatically incremented by Postgres on every UPDATE.
-            // We map it as a shadow property so no C# property is needed on the model.
             e.Property<uint>("xmin")
              .HasColumnType("xid")
              .IsRowVersion()
@@ -61,7 +58,6 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .HasForeignKey(i => i.OwnerId)
              .OnDelete(DeleteBehavior.Restrict);
 
-            // Full-text search index on title + description
             e.HasGeneratedTsVectorColumn(
                 i => i.SearchVector,
                 "english",
@@ -70,18 +66,17 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .HasMethod("GIN");
         });
 
-        // ── Tag ───────────────────────────────────────────────────────────────
+
         builder.Entity<Tag>(e =>
         {
             e.ToTable("tags");
             e.Property(t => t.Name).HasMaxLength(100).IsRequired();
-            // Case-insensitive unique index via collation
             e.HasIndex(t => t.Name)
              .IsUnique()
              .HasDatabaseName("IX_tags_name_unique");
         });
 
-        // ── InventoryTag (many-to-many join) ──────────────────────────────────
+
         builder.Entity<InventoryTag>(e =>
         {
             e.ToTable("inventory_tags");
@@ -98,14 +93,13 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ── InventoryField ────────────────────────────────────────────────────
+
         builder.Entity<InventoryField>(e =>
         {
             e.ToTable("inventory_fields");
             e.Property(f => f.Title).HasMaxLength(200).IsRequired();
             e.Property(f => f.Description).HasMaxLength(500);
 
-            // Each (inventory, type, slot) must be unique — enforces the 3-per-type cap.
             e.HasIndex(f => new { f.InventoryId, f.Type, f.Slot })
              .IsUnique()
              .HasDatabaseName("IX_inventory_fields_inv_type_slot");
@@ -116,7 +110,7 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ── InventoryAccess ───────────────────────────────────────────────────
+
         builder.Entity<InventoryAccess>(e =>
         {
             e.ToTable("inventory_access");
@@ -133,19 +127,16 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ── Item ──────────────────────────────────────────────────────────────
+
         builder.Entity<Item>(e =>
         {
             e.ToTable("items");
             e.Property(i => i.CustomId).HasMaxLength(500).IsRequired();
 
-            // THE key spec requirement: custom ID unique per inventory, not globally.
-            // Enforced at DB level — duplicates cause DbUpdateException.
             e.HasIndex(i => new { i.InventoryId, i.CustomId })
              .IsUnique()
              .HasDatabaseName("IX_items_inventory_custom");
 
-            // Same xmin-based optimistic locking for items.
             e.Property<uint>("xmin")
              .HasColumnType("xid")
              .IsRowVersion()
@@ -166,12 +157,11 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .HasForeignKey(i => i.UpdatedById)
              .OnDelete(DeleteBehavior.SetNull);
 
-            // Decimal precision for numeric custom fields
             foreach (var prop in new[] { "Number1", "Number2", "Number3" })
                 e.Property<decimal?>(prop).HasPrecision(18, 4);
         });
 
-        // ── CustomIdElement ───────────────────────────────────────────────────
+
         builder.Entity<CustomIdElement>(e =>
         {
             e.ToTable("custom_id_elements");
@@ -183,7 +173,7 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ── Comment ───────────────────────────────────────────────────────────
+
         builder.Entity<Comment>(e =>
         {
             e.ToTable("comments");
@@ -199,11 +189,9 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
              .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // ── Like ──────────────────────────────────────────────────────────────
         builder.Entity<Like>(e =>
         {
             e.ToTable("likes");
-            // Composite PK enforces one-like-per-user-per-item at the DB level.
             e.HasKey(l => new { l.ItemId, l.UserId });
 
             e.HasOne(l => l.Item)

@@ -65,8 +65,6 @@ public class RegisterModel : PageModel
             return Page();
         }
 
-        // Auto-sign-in after registration — AppUserClaimsPrincipalFactory
-        // builds all necessary claims (IsAdmin=false, Theme=light, etc.)
         await _signInManager.SignInAsync(user, isPersistent: false);
         return RedirectToPage("/Users/Index");
     }

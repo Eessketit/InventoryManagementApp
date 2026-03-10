@@ -54,13 +54,10 @@ public class LoginModel : PageModel
             return Page();
         }
 
-        // PasswordSignInAsync respects lockout (blocked) and isPersistent (Remember Me).
-        // The custom AppUserClaimsPrincipalFactory automatically puts IsAdmin, Theme,
-        // and DisplayName into the cookie — no manual claim wrangling needed here.
         var result = await _signInManager.PasswordSignInAsync(
             user,
             Input.Password,
-            isPersistent: Input.RememberMe,   // true → 30-day cookie; false → session only
+            isPersistent: Input.RememberMe,
             lockoutOnFailure: true);
 
         if (result.IsLockedOut)
@@ -75,7 +72,6 @@ public class LoginModel : PageModel
             return Page();
         }
 
-        // Track last login time (fire-and-forget is fine here)
         user.LastLoginAt = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
 

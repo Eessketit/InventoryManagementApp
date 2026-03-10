@@ -21,11 +21,8 @@ public class AppUserClaimsPrincipalFactory
 
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(AppUser user)
     {
-        // Start with Identity's standard claims (NameIdentifier, Name, email, etc.)
         var identity = await base.GenerateClaimsAsync(user);
 
-        // Add our app-level claims directly from the entity —
-        // these will be current every time the cookie is issued or refreshed.
         identity.AddClaim(new Claim("IsAdmin",     user.IsAdmin ? "true" : "false"));
         identity.AddClaim(new Claim("DisplayName", user.Name));
         identity.AddClaim(new Claim("Theme",       user.ThemePreference));
