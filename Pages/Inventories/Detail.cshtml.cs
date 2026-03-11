@@ -162,9 +162,12 @@ public class DetailModel : PageModel
     }
 
     public async Task<IActionResult> OnPostSaveFieldsAsync(Guid id,
-        List<FieldUpdate> fieldUpdates)
+        List<FieldUpdate>? fieldUpdates)
     {
         if (!await RequireEditAsync(id)) return Forbid();
+
+        if (fieldUpdates == null || fieldUpdates.Count == 0)
+            return RedirectToPage(new { id, tab = "fields" });
 
         var fieldIds = fieldUpdates.Select(f => f.FieldId).ToList();
         var fields = await _db.InventoryFields
@@ -175,8 +178,9 @@ public class DetailModel : PageModel
         {
             var f = fields.FirstOrDefault(x => x.Id == upd.FieldId);
             if (f == null) continue;
-            f.Title        = upd.Title.Trim().Length > 0 ? upd.Title.Trim() : f.Title;
-            f.Description  = upd.Description.Trim();
+            var trimmedTitle = upd.Title?.Trim() ?? "";
+            f.Title        = trimmedTitle.Length > 0 ? trimmedTitle : f.Title;
+            f.Description  = upd.Description?.Trim() ?? "";
             f.ShowInTable  = upd.ShowInTable;
             f.DisplayOrder = upd.DisplayOrder;
         }

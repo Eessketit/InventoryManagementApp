@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj": {}
+    "d:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj": {}
   },
   "projects": {
-    "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj": {
+    "d:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
+        "projectUniqueName": "d:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
         "projectName": "InventoryApp",
-        "projectPath": "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
+        "projectPath": "d:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
         "packagesPath": "C:\\Users\\Shohruz\\.nuget\\packages\\",
-        "outputPath": "D:\\Itransition\\InventoryManagementApp\\obj\\",
+        "outputPath": "d:\\Itransition\\InventoryManagementApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Shohruz\\AppData\\Roaming\\NuGet\\NuGet.Config"

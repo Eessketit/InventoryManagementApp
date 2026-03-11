@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "F3Kj1ysXrGk=",
+  "dgSpecHash": "99R6sZQBRNE=",
   "success": true,
-  "projectFilePath": "D:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
+  "projectFilePath": "d:\\Itransition\\InventoryManagementApp\\InventoryApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Shohruz\\.nuget\\packages\\aspnet.security.oauth.github\\8.0.0\\aspnet.security.oauth.github.8.0.0.nupkg.sha512",
     "C:\\Users\\Shohruz\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
