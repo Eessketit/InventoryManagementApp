@@ -22,7 +22,7 @@ public class Item
     /// Editable by users with write access, subject to format validation.
     /// Unique within its inventory (enforced by IX_items_inventory_custom).
     /// </summary>
-    public string CustomId { get; set; } = string.Empty;
+    public string? CustomId { get; set; } = string.Empty;
 
     // ── Fixed meta fields ─────────────────────────────────────────────────────
     public Guid CreatedById { get; set; }

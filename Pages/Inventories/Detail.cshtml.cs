@@ -62,7 +62,7 @@ public class DetailModel : PageModel
     }
 
     public record ItemRow(
-        Guid Id, string CustomId, string CreatedByName, DateTime CreatedAt,
+        Guid Id, string? CustomId, string CreatedByName, DateTime CreatedAt,
         int LikeCount, string?[] Values);
 
     public class InventoryStats

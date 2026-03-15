@@ -29,7 +29,7 @@ public class EditModel : PageModel
         public Guid? Id { get; set; }
         public Guid InventoryId { get; set; }
 
-        public string CustomId { get; set; } = "";
+        public string? CustomId { get; set; } = "";
         
         public string? Text1 { get; set; }
         public string? Text2 { get; set; }
@@ -138,7 +138,7 @@ public class EditModel : PageModel
             string generatedId = CustomIdService.GenerateId(inv.IdElements, nextSeq);
             
             // Allow manual override
-            string newId = string.IsNullOrWhiteSpace(Input.CustomId) ? generatedId : Input.CustomId;
+            string newId = string.IsNullOrWhiteSpace(Input.CustomId) ? generatedId : Input.CustomId!;
 
             var item = new Item
             {

@@ -131,7 +131,7 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
         builder.Entity<Item>(e =>
         {
             e.ToTable("items");
-            e.Property(i => i.CustomId).HasMaxLength(500).IsRequired();
+            e.Property(i => i.CustomId).HasMaxLength(500);
 
             e.HasIndex(i => new { i.InventoryId, i.CustomId })
              .IsUnique()
