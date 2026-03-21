@@ -5,6 +5,7 @@ using InventoryApp.Data;
 using InventoryApp.Infrastructure;
 using InventoryApp.Middleware;
 using InventoryApp.Models;
+using InventoryApp.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
@@ -105,6 +106,8 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim("IsAdmin", "true")));
 
 builder.Services.AddSingleton<InventoryApp.Services.MarkdownService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<SalesforceService>();
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -152,10 +155,30 @@ using (var scope = app.Services.CreateScope())
                     throw new Exception($"Failed to seed admin: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 }
             }
-            else if (!existing.IsAdmin)
+            else
             {
-                existing.IsAdmin = true;
-                await userManager.UpdateAsync(existing);
+                bool changed = false;
+                if (!existing.IsAdmin)
+                {
+                    existing.IsAdmin = true;
+                    changed = true;
+                }
+
+                // In Development, ensure the password matches the seed config
+                if (builder.Environment.IsDevelopment())
+                {
+                    if (!await userManager.CheckPasswordAsync(existing, seedPassword))
+                    {
+                        await userManager.RemovePasswordAsync(existing);
+                        await userManager.AddPasswordAsync(existing, seedPassword);
+                        changed = true;
+                    }
+                }
+
+                if (changed)
+                {
+                    await userManager.UpdateAsync(existing);
+                }
             }
         }
     }

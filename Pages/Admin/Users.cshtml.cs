@@ -96,7 +96,7 @@ public class UsersModel : PageModel
     }
 
     // ── Remove Admin ──────────────────────────────────────────────────────────
-    // NOTE: admins CAN remove themselves from admin (spec requirement).
+    // admins CAN remove themselves from admin
     public async Task<IActionResult> OnPostRemoveAdminAsync(Guid[] selectedIds)
     {
         if (selectedIds.Length == 0)

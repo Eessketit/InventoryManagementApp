@@ -26,6 +26,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXBpXFByZWZlcmVuY2VzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/Itransition/InventoryManagementApp/Pages/Api/Salesforce.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXBpXFNhbGVzZm9yY2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/Itransition/InventoryManagementApp/Pages/Api/Tags.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXBpXFRhZ3MuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

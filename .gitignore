@@ -1,0 +1,28 @@
+## .NET Core
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+
+## NuGet
+.nuget/
+packages/
+
+## Secrets and local settings (NEVER commit these)
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+secrets.json
+.env
+
+## Docker artifacts
+*.override.yml
+
+## OS
+.DS_Store
+Thumbs.db
