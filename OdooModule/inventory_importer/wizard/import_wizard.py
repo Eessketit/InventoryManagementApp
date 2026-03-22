@@ -45,7 +45,7 @@ class InventoryImportWizard(models.TransientModel):
             raise UserError('Could not extract token from URL. Make sure the URL contains ?token=...')
 
         # ── 3. Upsert Inventory record ───────────────────────────────────────
-        InventoryModel = self.env['inventory.import']
+        InventoryModel = self.env['inventory.import'].sudo()
         existing = InventoryModel.search([('api_token', '=', token)], limit=1)
 
         vals = {
@@ -70,8 +70,8 @@ class InventoryImportWizard(models.TransientModel):
         inventory.field_ids.mapped('stat_ids').unlink()
         inventory.field_ids.unlink()
 
-        FieldModel = self.env['inventory.field.import']
-        StatModel  = self.env['inventory.field.stat']
+        FieldModel = self.env['inventory.field.import'].sudo()
+        StatModel  = self.env['inventory.field.stat'].sudo()
 
         for field_data in data.get('fields', []):
             field_rec = FieldModel.create({
