@@ -27,20 +27,16 @@ public class SalesforceService
     /// <summary>Obtains an OAuth access token from Salesforce.</summary>
     private async Task<(string accessToken, string instanceUrl)> GetTokenAsync()
     {
-        var loginUrl     = (_config["Salesforce:LoginUrl"] ?? "https://login.salesforce.com").Trim();
+        var loginUrl     = (_config["Salesforce:LoginUrl"] ?? "https://orgfarm-71a80ce4ae-dev-ed.develop.my.salesforce.com").Trim();
         var clientId     = _config["Salesforce:ClientId"]?.Trim()     ?? throw new InvalidOperationException("Salesforce:ClientId not configured");
         var clientSecret = _config["Salesforce:ClientSecret"]?.Trim() ?? throw new InvalidOperationException("Salesforce:ClientSecret not configured");
-        var username     = _config["Salesforce:Username"]?.Trim()     ?? throw new InvalidOperationException("Salesforce:Username not configured");
-        var password     = _config["Salesforce:Password"]?.Trim()     ?? throw new InvalidOperationException("Salesforce:Password not configured");
 
         var client = _httpFactory.CreateClient();
         var body = new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            ["grant_type"]    = "password",
+            ["grant_type"]    = "client_credentials",
             ["client_id"]     = clientId,
-            ["client_secret"] = clientSecret,
-            ["username"]      = username,
-            ["password"]      = password,
+            ["client_secret"] = clientSecret
         });
 
         var response = await client.PostAsync($"{loginUrl}/services/oauth2/token", body);
