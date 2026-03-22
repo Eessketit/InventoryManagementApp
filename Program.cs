@@ -108,6 +108,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton<InventoryApp.Services.MarkdownService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<SalesforceService>();
+builder.Services.AddScoped<DropboxService>();
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
