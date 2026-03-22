@@ -294,8 +294,62 @@
                 </div>
             </div>
         </form>
+
+        <!-- API Token Card -->
+        <div class="card mt-4">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-plug-fill text-primary"></i>
+                <strong>API Access <span class="fw-normal text-muted">(Odoo / External Integration)</span></strong>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Generate a token to allow external systems (e.g. Odoo) to read aggregated statistics from this inventory.
+                    The token grants <strong>read-only</strong> access. Anyone with the token can fetch the data.
+                </p>
+                @if (!string.IsNullOrEmpty(inv.ApiToken))
+                {
+                    var apiUrl = $"{Request.Scheme}://{Request.Host}/Api/InventoryData?token={inv.ApiToken}";
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Your API Token</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control font-monospace" id="apiTokenInput"
+                                   value="@inv.ApiToken" readonly />
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('apiTokenInput').value); this.textContent='Copied!'">
+                                <i class="bi bi-clipboard"></i> Copy Token
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">API URL (ready to use in Odoo)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control font-monospace small" id="apiUrlInput"
+                                   value="@apiUrl" readonly />
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('apiUrlInput').value); this.textContent='Copied!'">
+                                <i class="bi bi-clipboard"></i> Copy URL
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-secondary mb-3">
+                        <i class="bi bi-info-circle me-1"></i> No token generated yet.
+                    </div>
+                }
+                <form method="post" asp-page-handler="GenerateApiToken">
+                    <input type="hidden" name="id" value="@inv.Id" />
+                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        @(string.IsNullOrEmpty(inv.ApiToken) ? "Generate Token" : "Regenerate Token")
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
     }
+
 
     <!-- ══ TAB 4: CUSTOM ID ═════════════════════════════════════════════════ -->
     @if (canEdit)

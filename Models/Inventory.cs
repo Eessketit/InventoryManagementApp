@@ -35,6 +35,10 @@ public class Inventory
     public ICollection<CustomIdElement> IdElements       { get; set; } = [];
     public ICollection<Comment>         Comments         { get; set; } = [];
 
+    // ── API Token ─────────────────────────────────────────────────────────────
+    /// <summary>Per-inventory token granting read-only API access to aggregated data.</summary>
+    public string? ApiToken { get; set; }
+
     // ── Search ────────────────────────────────────────────────────────────────
     public NpgsqlTypes.NpgsqlTsVector SearchVector { get; set; } = null!;
 }

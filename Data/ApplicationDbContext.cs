@@ -47,6 +47,11 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             e.Property(i => i.Title).HasMaxLength(300).IsRequired();
             e.Property(i => i.Category).HasMaxLength(100);
             e.Property(i => i.ImageUrl).HasMaxLength(1000);
+            e.Property(i => i.ApiToken).HasMaxLength(100);
+            e.HasIndex(i => i.ApiToken)
+             .IsUnique()
+             .HasFilter("\"ApiToken\" IS NOT NULL")
+             .HasDatabaseName("IX_inventories_api_token");
 
             e.Property<uint>("xmin")
              .HasColumnType("xid")

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── inventory.import LIST VIEW ──────────────────────────────────────── -->
+    <record id="view_inventory_import_tree" model="ir.ui.view">
+        <field name="name">inventory.import.tree</field>
+        <field name="model">inventory.import</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false">
+                <field name="name"/>
+                <field name="category"/>
+                <field name="item_count"/>
+                <field name="is_public"/>
+                <field name="imported_at"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── inventory.import FORM VIEW ──────────────────────────────────────── -->
+    <record id="view_inventory_import_form" model="ir.ui.view">
+        <field name="name">inventory.import.form</field>
+        <field name="model">inventory.import</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="General">
+                            <field name="category" readonly="1"/>
+                            <field name="is_public" readonly="1"/>
+                            <field name="item_count" readonly="1"/>
+                            <field name="created_at" readonly="1"/>
+                            <field name="imported_at" readonly="1"/>
+                        </group>
+                        <group string="API">
+                            <field name="api_token" readonly="1" password="True"/>
+                            <field name="api_url" readonly="1" widget="url"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Fields &amp; Statistics">
+                            <field name="field_ids" readonly="1" nolabel="1">
+                                <tree create="false" edit="false" delete="false">
+                                    <field name="name"/>
+                                    <field name="field_type"/>
+                                    <field name="slot"/>
+                                    <field name="in_table"/>
+                                </tree>
+                                <form create="false" edit="false" delete="false">
+                                    <group>
+                                        <field name="name" readonly="1"/>
+                                        <field name="field_type" readonly="1"/>
+                                        <field name="slot" readonly="1"/>
+                                        <field name="in_table" readonly="1"/>
+                                    </group>
+                                    <group string="Aggregated Statistics">
+                                        <field name="stat_ids" nolabel="1" readonly="1">
+                                            <tree create="false" edit="false" delete="false">
+                                                <field name="stat_key" string="Metric"/>
+                                                <field name="stat_value" string="Value"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── ACTION ──────────────────────────────────────────────────────────── -->
+    <record id="action_inventory_import" model="ir.actions.act_window">
+        <field name="name">Imported Inventories</field>
+        <field name="res_model">inventory.import</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No inventories imported yet.
+            </p>
+            <p>
+                Use the <b>Import Inventory</b> button to fetch data from your
+                Inventory Management App using an API token.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── WIZARD FORM VIEW ────────────────────────────────────────────────── -->
+    <record id="view_inventory_import_wizard_form" model="ir.ui.view">
+        <field name="name">inventory.import.wizard.form</field>
+        <field name="model">inventory.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Inventory from API">
+                <group>
+                    <field name="api_url"
+                           placeholder="https://yourapp.onrender.com/Api/InventoryData?token=abc123"
+                           string="API URL (with token)"/>
+                </group>
+                <footer>
+                    <button name="action_import" string="Import" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── WIZARD ACTION ────────────────────────────────────────────────────── -->
+    <record id="action_inventory_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Inventory</field>
+        <field name="res_model">inventory.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

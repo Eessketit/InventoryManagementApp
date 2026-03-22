@@ -22,6 +22,10 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cVXNlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/Itransition/InventoryManagementApp/Pages/Api/InventoryData.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXBpXEludmVudG9yeURhdGEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/Itransition/InventoryManagementApp/Pages/Api/Preferences.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXBpXFByZWZlcmVuY2VzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

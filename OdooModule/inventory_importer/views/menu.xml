@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── TOP-LEVEL MENU ───────────────────────────────────────────────────── -->
+    <menuitem id="menu_inventory_importer_root"
+              name="Inventory Importer"
+              sequence="90"/>
+
+    <!-- ── SUB-MENUS ────────────────────────────────────────────────────────── -->
+    <menuitem id="menu_inventory_imports"
+              name="Imported Inventories"
+              parent="menu_inventory_importer_root"
+              action="action_inventory_import"
+              sequence="10"/>
+
+    <menuitem id="menu_inventory_import_wizard"
+              name="Import Inventory"
+              parent="menu_inventory_importer_root"
+              action="action_inventory_import_wizard"
+              sequence="20"/>
+
+</odoo>

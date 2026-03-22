@@ -236,7 +236,18 @@ public class DetailModel : PageModel
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // POST: Custom ID elements
+    // POST: Generate/Regenerate API Token
+    // ─────────────────────────────────────────────────────────────────────────
+    public async Task<IActionResult> OnPostGenerateApiTokenAsync(Guid id)
+    {
+        var inventory = await _db.Inventories.FindAsync(id);
+        if (inventory == null || !CheckCanEdit(inventory)) return Forbid();
+
+        inventory.ApiToken = Guid.NewGuid().ToString("N"); // 32-char hex, no dashes
+        await _db.SaveChangesAsync();
+        return RedirectToPage(new { id, tab = "settings" });
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     public async Task<IActionResult> OnPostSaveCustomIdAsync(Guid id,
         List<IdElementInput> elements)
